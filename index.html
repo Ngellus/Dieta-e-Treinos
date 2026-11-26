@@ -1,0 +1,3250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#09090b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Dieta & Treinos" />
+  <title>Dieta & Check-in de Atividades Físicas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* Configurações gerais de tipografia e estética escura */
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #09090b;
+      color: #f4f4f5;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* Sliders customizados no estilo moderno escuro */
+    input[type="range"].macro-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 9999px;
+      background: #27272a;
+      outline: none;
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    input[type="range"].macro-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 3px solid #18181b;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="range"].macro-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
+    }
+
+    input[type="range"].macro-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 3px solid #18181b;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    /* Remove setas nativas em inputs numéricos para visual limpo */
+    input[type="number"].clean-number::-webkit-inner-spin-button,
+    input[type="number"].clean-number::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"].clean-number {
+      -moz-appearance: textfield;
+    }
+
+    /* Animação suave de expansão do acordeão */
+    .accordion-content {
+      transition: max-height 0.28s ease, opacity 0.22s ease;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#09090b] text-zinc-100 pt-4 pb-24 sm:pb-10 px-3 sm:px-6 md:pt-7">
+  <!-- Barra de Navegação Unificada (Topo no Desktop / Fixa no Rodapé no Celular) -->
+  <nav
+    aria-label="Navegação principal do aplicativo"
+    class="fixed bottom-0 inset-x-0 sm:static sm:max-w-3xl sm:mx-auto sm:mb-4 z-40 bg-[#121215]/95 sm:bg-[#121215] backdrop-blur-md border-t sm:border border-zinc-800/90 sm:rounded-2xl px-3 py-2 sm:p-1.5 shadow-[0_-10px_30px_rgba(0,0,0,0.6)] sm:shadow-lg"
+  >
+    <div class="max-w-3xl mx-auto grid grid-cols-2 gap-2">
+      <button
+        type="button"
+        id="nav-tab-macros"
+        aria-selected="true"
+        class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold bg-zinc-800 text-zinc-100 border border-zinc-700/80 transition cursor-pointer"
+      >
+        <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span>Dieta & Macros</span>
+      </button>
+
+      <button
+        type="button"
+        id="nav-tab-checkin"
+        aria-selected="false"
+        class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/70 border border-transparent transition cursor-pointer"
+      >
+        <svg class="w-4 h-4 text-sky-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Check-in Treinos</span>
+        <span id="nav-checkin-badge" class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-sky-500/15 text-sky-300 tabular-nums">0/5</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Contêiner principal centralizado -->
+  <main class="max-w-3xl mx-auto">
+    <!-- =====================================================================
+         ABA 1: PAINEL DE DIETA & MACROS (MANTIDO INTACTO)
+    ====================================================================== -->
+    <div id="view-macros">
+      <section
+        aria-label="Painel de acompanhamento nutricional por refeição"
+        class="bg-[#121215] border border-zinc-800/80 rounded-3xl p-4 sm:p-7 shadow-[0_24px_60px_rgba(0,0,0,0.65)]"
+      >
+        <!-- Título e seletor de perfil de dia -->
+        <div class="flex flex-col gap-4 mb-6">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+              <h1 class="text-lg sm:text-xl font-semibold tracking-tight text-zinc-100">
+                Acompanhamento de Proteínas e Carboidratos
+              </h1>
+              <p class="text-xs sm:text-sm text-zinc-400 mt-0.5">
+                Recomposição corporal • 4 refeições diárias • Base sem folhas, vegetais ou frutas
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+              <span
+                id="sync-badge"
+                class="px-2.5 py-1.5 rounded-xl text-[11px] font-medium bg-zinc-900 text-zinc-400 border border-zinc-800 inline-flex items-center gap-1.5"
+              >
+                <span id="sync-dot" class="w-2 h-2 rounded-full bg-zinc-500"></span>
+                <span id="sync-text">Conectando...</span>
+              </span>
+              <button
+                type="button"
+                id="btn-open-report"
+                aria-label="Abrir relatório semanal e mensal"
+                class="px-3 py-2 rounded-xl text-xs font-semibold bg-sky-500/15 hover:bg-sky-500/25 active:scale-[0.99] text-sky-300 border border-sky-500/30 transition cursor-pointer"
+              >
+                Relatório
+              </button>
+              <button
+                type="button"
+                id="btn-log-today"
+                aria-label="Salvar registro do dia no relatório"
+                class="px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 active:scale-[0.99] text-emerald-300 border border-emerald-500/30 transition cursor-pointer"
+              >
+                Registrar dia
+              </button>
+              <button
+                type="button"
+                id="btn-reload-app"
+                aria-label="Atualizar painel"
+                class="px-3 py-2 rounded-xl text-xs font-medium bg-zinc-900 hover:bg-zinc-800 active:scale-[0.99] text-zinc-300 border border-zinc-800 transition cursor-pointer"
+              >
+                Atualizar
+              </button>
+              <button
+                type="button"
+                id="btn-reset-day"
+                class="px-3.5 py-2 rounded-xl text-xs font-medium bg-zinc-900 hover:bg-zinc-800 active:scale-[0.99] text-zinc-300 border border-zinc-800 transition cursor-pointer"
+              >
+                Restaurar padrão
+              </button>
+            </div>
+          </div>
+
+          <!-- Seletores de perfil de dia (3 perfis) -->
+          <div role="tablist" aria-label="Perfil de treino do dia" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <button
+              type="button"
+              role="tab"
+              data-profile="musculacao"
+              class="profile-btn text-left p-3 rounded-2xl border transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-zinc-100">Seg / Qua / Sex</span>
+                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300">14:00</span>
+              </div>
+              <div class="text-xs text-zinc-400 mt-1">Musculação • Meta 115g carbo</div>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              data-profile="kungfu"
+              class="profile-btn text-left p-3 rounded-2xl border transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-zinc-100">Ter / Qui</span>
+                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">20:15</span>
+              </div>
+              <div class="text-xs text-zinc-400 mt-1">Kung Fu • Meta 115g carbo</div>
+            </button>
+
+            <button
+              type="button"
+              role="tab"
+              data-profile="descanso"
+              class="profile-btn text-left p-3 rounded-2xl border transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-zinc-100">Dias sem treino</span>
+                <span class="text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300">Base</span>
+              </div>
+              <div class="text-xs text-zinc-400 mt-1">Descanso • Meta 85g carbo</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- Cabeçalho com resumo em 3 colunas -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 py-4 px-2 sm:px-4 rounded-2xl bg-[#17171c] border border-zinc-800/70 mb-6">
+          <div class="text-center px-1 border-r border-zinc-800/80">
+            <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs text-zinc-400 leading-tight">
+              <span>Total Proteína</span>
+              <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300">Editável</span>
+            </div>
+            <div class="flex items-center justify-center gap-1 mt-1">
+              <button
+                type="button"
+                id="btn-total-p-dec"
+                aria-label="Diminuir Total Proteína"
+                class="w-6 h-7 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 text-xs font-bold transition cursor-pointer"
+              >-</button>
+              <div class="inline-flex items-baseline justify-center bg-[#111114] border border-zinc-800 focus-within:border-sky-400 rounded-xl px-1.5 py-0.5 transition">
+                <input
+                  id="input-total-protein"
+                  type="number"
+                  min="0"
+                  max="400"
+                  step="1"
+                  aria-label="Total Proteína em gramas"
+                  class="clean-number w-12 sm:w-14 bg-transparent text-center text-base sm:text-xl font-bold text-zinc-100 focus:outline-none tabular-nums"
+                />
+                <span class="text-xs sm:text-sm font-semibold text-zinc-400">g</span>
+              </div>
+              <button
+                type="button"
+                id="btn-total-p-inc"
+                aria-label="Aumentar Total Proteína"
+                class="w-6 h-7 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 text-xs font-bold transition cursor-pointer"
+              >+</button>
+            </div>
+            <div id="kpi-protein-sub" class="text-[11px] text-emerald-400 mt-1 tabular-nums">Meta: 162g</div>
+          </div>
+
+          <div class="text-center px-1 border-r border-zinc-800/80">
+            <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs text-zinc-400 leading-tight">
+              <span>Total Carboidrato</span>
+              <span class="hidden sm:inline-block text-[9px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300">Editável</span>
+            </div>
+            <div class="flex items-center justify-center gap-1 mt-1">
+              <button
+                type="button"
+                id="btn-total-c-dec"
+                aria-label="Diminuir Total Carboidrato"
+                class="w-6 h-7 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 text-xs font-bold transition cursor-pointer"
+              >-</button>
+              <div class="inline-flex items-baseline justify-center bg-[#111114] border border-zinc-800 focus-within:border-emerald-400 rounded-xl px-1.5 py-0.5 transition">
+                <input
+                  id="input-total-carbs"
+                  type="number"
+                  min="0"
+                  max="500"
+                  step="1"
+                  aria-label="Total Carboidrato em gramas"
+                  class="clean-number w-12 sm:w-14 bg-transparent text-center text-base sm:text-xl font-bold text-zinc-100 focus:outline-none tabular-nums"
+                />
+                <span class="text-xs sm:text-sm font-semibold text-zinc-400">g</span>
+              </div>
+              <button
+                type="button"
+                id="btn-total-c-inc"
+                aria-label="Aumentar Total Carboidrato"
+                class="w-6 h-7 rounded-lg bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 text-xs font-bold transition cursor-pointer"
+              >+</button>
+            </div>
+            <div id="kpi-carbs-range" class="text-[11px] text-zinc-400 mt-1 tabular-nums">Faixa: 100–140g</div>
+          </div>
+
+          <div class="text-center px-1 flex flex-col justify-between">
+            <div class="text-[11px] sm:text-xs text-zinc-400 leading-tight">Balanço / Metas</div>
+            <div id="kpi-carbs-diff" class="text-lg sm:text-2xl font-bold text-zinc-300 mt-1 tabular-nums">0g</div>
+            <div id="kpi-carbs-status" class="text-[11px] text-zinc-400 mt-1 tabular-nums">No alvo • 1.100 kcal</div>
+          </div>
+        </div>
+
+        <!-- Campos editáveis de Meta Diária de Proteína e Carboidrato -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6">
+          <div class="bg-[#17171c] border border-zinc-800/80 rounded-2xl p-3.5">
+            <label for="input-target-protein" class="block text-xs text-zinc-400 mb-1.5">
+              Meta diária de proteína (sugerido: 155–170g)
+            </label>
+            <div class="flex items-center justify-between bg-[#111114] border border-zinc-800 rounded-xl px-3.5 py-2 focus-within:border-zinc-500 transition">
+              <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">g</span>
+              <input
+                id="input-target-protein"
+                type="number"
+                min="60"
+                max="350"
+                step="1"
+                class="clean-number w-full bg-transparent text-right text-base sm:text-lg font-semibold text-zinc-100 focus:outline-none tabular-nums"
+              />
+            </div>
+          </div>
+
+          <div class="bg-[#17171c] border border-zinc-800/80 rounded-2xl p-3.5">
+            <label for="input-target-carbs" class="block text-xs text-zinc-400 mb-1.5">
+              Meta diária de carboidrato (alvo do perfil)
+            </label>
+            <div class="flex items-center justify-between bg-[#111114] border border-zinc-800 rounded-xl px-3.5 py-2 focus-within:border-zinc-500 transition">
+              <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">g</span>
+              <input
+                id="input-target-carbs"
+                type="number"
+                min="0"
+                max="450"
+                step="1"
+                class="clean-number w-full bg-transparent text-right text-base sm:text-lg font-semibold text-zinc-100 focus:outline-none tabular-nums"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de composição segmentada horizontal -->
+        <div class="mb-7">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+            <h2 class="text-sm font-medium text-zinc-200">Composição por refeição (distribuição de macros)</h2>
+            <div class="flex items-center gap-1.5 bg-[#17171c] p-1 rounded-xl border border-zinc-800/80">
+              <button
+                type="button"
+                id="mode-combined"
+                class="comp-mode-btn px-2.5 py-1 rounded-lg text-[11px] font-medium transition cursor-pointer"
+              >
+                Prot + Carbo
+              </button>
+              <button
+                type="button"
+                id="mode-protein"
+                class="comp-mode-btn px-2.5 py-1 rounded-lg text-[11px] font-medium transition cursor-pointer"
+              >
+                Só Proteína
+              </button>
+              <button
+                type="button"
+                id="mode-carbs"
+                class="comp-mode-btn px-2.5 py-1 rounded-lg text-[11px] font-medium transition cursor-pointer"
+              >
+                Só Carbo
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="composition-bar"
+            class="w-full h-3.5 rounded-full bg-zinc-800/90 overflow-hidden flex gap-0.5 p-0.5"
+            aria-label="Barra de composição das 4 refeições"
+          ></div>
+
+          <div id="composition-legend" class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 text-xs"></div>
+        </div>
+
+        <!-- Lista de acordeões expansíveis das 4 refeições -->
+        <div id="meals-container" class="space-y-3"></div>
+      </section>
+    </div>
+
+    <!-- =====================================================================
+         ABA 2: PAINEL DE CHECK-IN DE ATIVIDADES FÍSICAS & RELATÓRIO
+    ====================================================================== -->
+    <div id="view-checkin" class="hidden">
+      <section
+        aria-label="Painel de check-in de atividades físicas"
+        class="bg-[#121215] border border-zinc-800/80 rounded-3xl p-4 sm:p-7 shadow-[0_24px_60px_rgba(0,0,0,0.65)]"
+      >
+        <!-- Cabeçalho -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+          <div>
+            <h1 class="text-lg sm:text-xl font-semibold tracking-tight text-zinc-100">
+              Check-in de Atividades Físicas
+            </h1>
+            <p class="text-xs sm:text-sm text-zinc-400 mt-0.5">
+              Musculação • Kung Fu • Corrida • Bicicleta • Natação • Extras
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            <span
+              id="ci-sync-badge"
+              class="px-2.5 py-1.5 rounded-xl text-[11px] font-medium bg-zinc-900 text-zinc-400 border border-zinc-800 inline-flex items-center gap-1.5"
+            >
+              <span id="ci-sync-dot" class="w-2 h-2 rounded-full bg-zinc-500"></span>
+              <span id="ci-sync-text">Sincronizado</span>
+            </span>
+            <button
+              type="button"
+              id="btn-open-ci-report"
+              class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-sky-500/15 hover:bg-sky-500/25 active:scale-[0.99] text-sky-300 border border-sky-500/30 transition cursor-pointer"
+            >
+              Relatório Semanal / Mensal
+            </button>
+          </div>
+        </div>
+
+        <!-- KPIs da Semana Atual -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-4 py-4 px-2 sm:px-4 rounded-2xl bg-[#17171c] border border-zinc-800/70 mb-6">
+          <div class="text-center px-1 border-r border-zinc-800/80">
+            <div class="text-[11px] sm:text-xs text-zinc-400">Treinos na Semana</div>
+            <div id="ci-kpi-count" class="text-lg sm:text-2xl font-bold text-zinc-100 mt-1 tabular-nums">0 / 5</div>
+            <div id="ci-kpi-pct" class="text-[11px] text-emerald-400 mt-0.5 tabular-nums">0% da meta</div>
+          </div>
+
+          <div class="text-center px-1 border-r border-zinc-800/80">
+            <div class="text-[11px] sm:text-xs text-zinc-400">Tempo Acumulado</div>
+            <div id="ci-kpi-minutes" class="text-lg sm:text-2xl font-bold text-sky-400 mt-1 tabular-nums">0 min</div>
+            <div id="ci-kpi-hours" class="text-[11px] text-zinc-400 mt-0.5 tabular-nums">0,0h na semana</div>
+          </div>
+
+          <div class="text-center px-1">
+            <div class="text-[11px] sm:text-xs text-zinc-400">Sequência Atual</div>
+            <div id="ci-kpi-streak" class="text-lg sm:text-2xl font-bold text-amber-400 mt-1 tabular-nums">0 dias</div>
+            <div id="ci-kpi-month-total" class="text-[11px] text-zinc-400 mt-0.5 tabular-nums">0 no mês</div>
+          </div>
+        </div>
+
+        <!-- Grade Interativa da Semana Atual (Seg a Dom) -->
+        <div class="mb-6">
+          <div class="flex items-center justify-between mb-2.5">
+            <h2 class="text-sm font-medium text-zinc-200">Calendário da semana atual (toque para marcar/desmarcar)</h2>
+            <span id="ci-week-range-label" class="text-[11px] text-zinc-400 tabular-nums"></span>
+          </div>
+          <div id="ci-week-grid" class="grid grid-cols-7 gap-1.5 sm:gap-2"></div>
+        </div>
+
+        <!-- Check-in Rápido com 1 Clique -->
+        <div class="bg-[#17171c] border border-zinc-800/80 rounded-2xl p-4 mb-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div>
+              <h2 class="text-sm font-semibold text-zinc-100">Registrar Check-in</h2>
+              <p class="text-[11px] text-zinc-400">Escolha a data, o tipo de treino e confirme em 1 toque</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <label for="ci-input-date" class="text-xs text-zinc-400">Data:</label>
+              <input
+                type="date"
+                id="ci-input-date"
+                class="bg-[#111114] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs text-zinc-100 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <!-- Botões de Check-in Rápido -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 mb-3.5">
+            <button
+              type="button"
+              data-ci-type="musculacao"
+              data-ci-duration="60"
+              class="ci-quick-btn text-left p-3.5 rounded-2xl bg-[#111114] hover:bg-sky-500/10 border border-zinc-800 hover:border-sky-500/40 active:scale-[0.99] transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-sky-300">Musculação</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300">60 min</span>
+              </div>
+              <div class="text-[11px] text-zinc-400 mt-1">Seg / Qua / Sex • 14:00</div>
+            </button>
+
+            <button
+              type="button"
+              data-ci-type="kungfu"
+              data-ci-duration="75"
+              class="ci-quick-btn text-left p-3.5 rounded-2xl bg-[#111114] hover:bg-emerald-500/10 border border-zinc-800 hover:border-emerald-500/40 active:scale-[0.99] transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-emerald-300">Kung Fu</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">75 min</span>
+              </div>
+              <div class="text-[11px] text-zinc-400 mt-1">Ter / Qui • 20:15</div>
+            </button>
+
+            <button
+              type="button"
+              data-ci-type="corrida"
+              data-ci-duration="40"
+              class="ci-quick-btn text-left p-3.5 rounded-2xl bg-[#111114] hover:bg-violet-500/10 border border-zinc-800 hover:border-violet-500/40 active:scale-[0.99] transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-violet-300">Corrida</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/15 text-violet-300">40 min</span>
+              </div>
+              <div class="text-[11px] text-zinc-400 mt-1">Rodagem ou tiros</div>
+            </button>
+
+            <button
+              type="button"
+              data-ci-type="bicicleta"
+              data-ci-duration="50"
+              class="ci-quick-btn text-left p-3.5 rounded-2xl bg-[#111114] hover:bg-cyan-500/10 border border-zinc-800 hover:border-cyan-500/40 active:scale-[0.99] transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-cyan-300">Bicicleta</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300">50 min</span>
+              </div>
+              <div class="text-[11px] text-zinc-400 mt-1">Bike indoor ou rua</div>
+            </button>
+
+            <button
+              type="button"
+              data-ci-type="natacao"
+              data-ci-duration="45"
+              class="ci-quick-btn text-left p-3.5 rounded-2xl bg-[#111114] hover:bg-indigo-500/10 border border-zinc-800 hover:border-indigo-500/40 active:scale-[0.99] transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-indigo-300">Natação</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-300">45 min</span>
+              </div>
+              <div class="text-[11px] text-zinc-400 mt-1">Piscina ou águas abertas</div>
+            </button>
+
+            <button
+              type="button"
+              data-ci-type="cardio"
+              data-ci-duration="40"
+              class="ci-quick-btn text-left p-3.5 rounded-2xl bg-[#111114] hover:bg-amber-500/10 border border-zinc-800 hover:border-amber-500/40 active:scale-[0.99] transition cursor-pointer"
+            >
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-amber-300">Cardio / Extra</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300">40 min</span>
+              </div>
+              <div class="text-[11px] text-zinc-400 mt-1">Caminhada, mobilidade ou extra</div>
+            </button>
+          </div>
+
+          <!-- Detalhes opcionais (duração e observação) -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-zinc-800/70">
+            <div>
+              <label for="ci-input-duration" class="block text-[10px] text-zinc-400 mb-1">Duração personalizada (min)</label>
+              <input
+                type="number"
+                id="ci-input-duration"
+                min="10"
+                max="300"
+                step="5"
+                value="60"
+                class="clean-number w-full bg-[#111114] border border-zinc-800 focus:border-zinc-500 rounded-xl px-3 py-1.5 text-xs font-semibold text-zinc-100 focus:outline-none tabular-nums"
+              />
+            </div>
+            <div class="sm:col-span-2">
+              <label for="ci-input-note" class="block text-[10px] text-zinc-400 mb-1">Observação do treino (opcional)</label>
+              <input
+                type="text"
+                id="ci-input-note"
+                placeholder="Ex.: Treino A (Peito/Tríceps), formas de Kung Fu, intensidade alta..."
+                class="w-full bg-[#111114] border border-zinc-800 focus:border-zinc-500 rounded-xl px-3 py-1.5 text-xs text-zinc-100 focus:outline-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Histórico Recente de Check-ins -->
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <h2 class="text-sm font-medium text-zinc-200">Histórico de atividades realizadas</h2>
+            <div class="flex flex-wrap items-center gap-1 bg-[#17171c] p-1 rounded-xl border border-zinc-800/80 text-[11px]">
+              <button type="button" data-ci-filter="all" class="ci-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-zinc-700 text-zinc-100 cursor-pointer">Todos</button>
+              <button type="button" data-ci-filter="musculacao" class="ci-filter-btn px-2.5 py-1 rounded-lg font-medium text-zinc-400 hover:text-zinc-200 cursor-pointer">Musculação</button>
+              <button type="button" data-ci-filter="kungfu" class="ci-filter-btn px-2.5 py-1 rounded-lg font-medium text-zinc-400 hover:text-zinc-200 cursor-pointer">Kung Fu</button>
+              <button type="button" data-ci-filter="corrida" class="ci-filter-btn px-2.5 py-1 rounded-lg font-medium text-zinc-400 hover:text-zinc-200 cursor-pointer">Corrida</button>
+              <button type="button" data-ci-filter="bicicleta" class="ci-filter-btn px-2.5 py-1 rounded-lg font-medium text-zinc-400 hover:text-zinc-200 cursor-pointer">Bicicleta</button>
+              <button type="button" data-ci-filter="natacao" class="ci-filter-btn px-2.5 py-1 rounded-lg font-medium text-zinc-400 hover:text-zinc-200 cursor-pointer">Natação</button>
+              <button type="button" data-ci-filter="cardio" class="ci-filter-btn px-2.5 py-1 rounded-lg font-medium text-zinc-400 hover:text-zinc-200 cursor-pointer">Extras</button>
+            </div>
+          </div>
+          <div id="ci-history-list" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Caixa de feedback discreto compartilhada -->
+    <div
+      id="status-toast"
+      role="status"
+      aria-live="polite"
+      class="hidden mt-4 px-3.5 py-2.5 rounded-xl bg-zinc-900 border border-zinc-700/80 text-xs text-zinc-200 flex items-center justify-between"
+    >
+      <span id="status-toast-text"></span>
+      <button
+        type="button"
+        id="btn-close-toast"
+        class="text-zinc-400 hover:text-zinc-200 ml-3 text-xs font-medium cursor-pointer"
+      >
+        OK
+      </button>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 1: EDITOR DE PRESETS RÁPIDOS DE REFEIÇÃO
+    ====================================================================== -->
+    <div
+      id="preset-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="preset-modal-title"
+      class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div class="bg-[#16161b] border border-zinc-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between mb-2">
+          <h3 id="preset-modal-title" class="text-base sm:text-lg font-semibold text-zinc-100">
+            Editar Presets Rápidos
+          </h3>
+          <button
+            type="button"
+            id="btn-close-preset-modal"
+            aria-label="Fechar editor de presets"
+            class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 flex items-center justify-center text-sm cursor-pointer"
+          >
+            ✕
+          </button>
+        </div>
+        <p id="preset-modal-subtitle" class="text-xs text-zinc-400 mb-4">
+          Personalize os botões de atalho desta refeição. As alterações ficam salvas automaticamente.
+        </p>
+
+        <div id="preset-editor-list" class="space-y-3"></div>
+
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-zinc-800/80">
+          <button
+            type="button"
+            id="btn-add-preset"
+            class="px-3 py-2 rounded-xl text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-700 transition cursor-pointer"
+          >
+            + Novo preset
+          </button>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              id="btn-reset-meal-presets"
+              class="px-3 py-2 rounded-xl text-xs font-medium bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 border border-zinc-800 transition cursor-pointer"
+            >
+              Padrão
+            </button>
+            <button
+              type="button"
+              id="btn-save-presets"
+              class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-zinc-950 transition cursor-pointer"
+            >
+              Salvar presets
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 2: RELATÓRIO SEMANAL E MENSAL DE MACROS
+    ====================================================================== -->
+    <div
+      id="report-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="report-modal-title"
+      class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
+    >
+      <div class="bg-[#141418] border border-zinc-800 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <div>
+            <h3 id="report-modal-title" class="text-base sm:text-lg font-semibold text-zinc-100">
+              Relatório de Metas Diárias (Macros)
+            </h3>
+            <p class="text-xs text-zinc-400 mt-0.5">
+              Acompanhamento de proteínas e carboidratos vs. metas planejadas
+            </p>
+          </div>
+          <button
+            type="button"
+            id="btn-close-report-modal"
+            aria-label="Fechar relatório"
+            class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 flex items-center justify-center text-sm cursor-pointer shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-4 pb-3 border-b border-zinc-800/80">
+          <div class="inline-flex bg-[#0e0e11] p-1 rounded-xl border border-zinc-800 self-start">
+            <button
+              type="button"
+              id="btn-report-weekly"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-700 text-zinc-100 transition cursor-pointer"
+            >
+              Semanal (7 dias)
+            </button>
+            <button
+              type="button"
+              id="btn-report-monthly"
+              class="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 transition cursor-pointer"
+            >
+              Mensal (30 dias)
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <label for="input-report-date" class="text-[11px] text-zinc-400">Data:</label>
+            <input
+              type="date"
+              id="input-report-date"
+              class="bg-[#0e0e11] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs text-zinc-100 focus:outline-none"
+            />
+            <button
+              type="button"
+              id="btn-save-date-log"
+              class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-400 text-zinc-950 transition cursor-pointer"
+            >
+              Salvar dia atual
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-5">
+          <div class="bg-[#19191f] border border-zinc-800/80 rounded-2xl p-3 text-center">
+            <div class="text-[11px] text-zinc-400">Média Proteína</div>
+            <div id="rep-avg-protein" class="text-base sm:text-xl font-bold text-sky-400 mt-1 tabular-nums">0%</div>
+            <div id="rep-meta-protein" class="text-[10px] text-zinc-400 mt-0.5 tabular-nums">0g / 160g</div>
+          </div>
+          <div class="bg-[#19191f] border border-zinc-800/80 rounded-2xl p-3 text-center">
+            <div class="text-[11px] text-zinc-400">Média Carboidrato</div>
+            <div id="rep-avg-carbs" class="text-base sm:text-xl font-bold text-emerald-400 mt-1 tabular-nums">0%</div>
+            <div id="rep-meta-carbs" class="text-[10px] text-zinc-400 mt-0.5 tabular-nums">0g / 115g</div>
+          </div>
+          <div class="bg-[#19191f] border border-zinc-800/80 rounded-2xl p-3 text-center">
+            <div class="text-[11px] text-zinc-400">Dias na Meta</div>
+            <div id="rep-adherence" class="text-base sm:text-xl font-bold text-zinc-100 mt-1 tabular-nums">0/0</div>
+            <div id="rep-adherence-pct" class="text-[10px] text-zinc-400 mt-0.5 tabular-nums">0% de adesão</div>
+          </div>
+        </div>
+
+        <div class="bg-[#19191f] border border-zinc-800/80 rounded-2xl p-3.5 mb-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span id="rep-chart-title" class="text-xs font-semibold text-zinc-200">Evolução nos últimos 7 dias (% da meta)</span>
+            <div class="flex items-center gap-3 text-[11px] text-zinc-400">
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-sky-400"></span> % Proteína</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span> % Carbo</span>
+              <span class="inline-flex items-center gap-1"><span class="w-3 border-t border-dashed border-zinc-400"></span> 100% Meta</span>
+            </div>
+          </div>
+          <div id="rep-chart-container" class="w-full overflow-x-auto pb-1"></div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-xs font-semibold text-zinc-200">Registros do período</h4>
+            <span id="rep-count-label" class="text-[11px] text-zinc-400">0 registros</span>
+          </div>
+          <div id="rep-history-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- =====================================================================
+         MODAL 3: RELATÓRIO SEMANAL E MENSAL DE ATIVIDADES FÍSICAS
+    ====================================================================== -->
+    <div
+      id="ci-report-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="ci-report-modal-title"
+      class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5"
+    >
+      <div class="bg-[#141418] border border-zinc-800 rounded-3xl max-w-2xl w-full p-4 sm:p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <div>
+            <h3 id="ci-report-modal-title" class="text-base sm:text-lg font-semibold text-zinc-100">
+              Relatório de Frequência nos Treinos
+            </h3>
+            <p class="text-xs text-zinc-400 mt-0.5">
+              Consistência semanal e mensal de Musculação, Kung Fu e Extras
+            </p>
+          </div>
+          <button
+            type="button"
+            id="btn-close-ci-report"
+            aria-label="Fechar relatório de treinos"
+            class="w-8 h-8 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 flex items-center justify-center text-sm cursor-pointer shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Alternância Semanal / Mensal -->
+        <div class="flex flex-wrap items-center justify-between gap-2.5 mb-4 pb-3 border-b border-zinc-800/80">
+          <div class="inline-flex bg-[#0e0e11] p-1 rounded-xl border border-zinc-800">
+            <button
+              type="button"
+              id="btn-ci-rep-weekly"
+              class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-700 text-zinc-100 transition cursor-pointer"
+            >
+              Semanal (7 dias)
+            </button>
+            <button
+              type="button"
+              id="btn-ci-rep-monthly"
+              class="px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 transition cursor-pointer"
+            >
+              Mensal (30 dias)
+            </button>
+          </div>
+
+          <div class="flex items-center gap-2 text-xs text-zinc-400">
+            <span>Meta semanal:</span>
+            <input
+              type="number"
+              id="ci-weekly-goal-input"
+              min="1"
+              max="14"
+              step="1"
+              value="5"
+              class="clean-number w-12 bg-[#0e0e11] border border-zinc-800 rounded-lg px-2 py-1 text-center font-semibold text-zinc-100 tabular-nums"
+            />
+            <span>treinos</span>
+          </div>
+        </div>
+
+        <!-- KPIs do Relatório de Treinos -->
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 mb-5">
+          <div class="bg-[#19191f] border border-zinc-800/80 rounded-2xl p-3 text-center">
+            <div class="text-[11px] text-zinc-400">Frequência</div>
+            <div id="ci-rep-sessions" class="text-base sm:text-xl font-bold text-emerald-400 mt-1 tabular-nums">0</div>
+            <div id="ci-rep-goal-pct" class="text-[10px] text-zinc-400 mt-0.5 tabular-nums">0% da meta</div>
+          </div>
+          <div class="bg-[#19191f] border border-zinc-800/80 rounded-2xl p-3 text-center">
+            <div class="text-[11px] text-zinc-400">Carga Horária</div>
+            <div id="ci-rep-total-min" class="text-base sm:text-xl font-bold text-sky-400 mt-1 tabular-nums">0 min</div>
+            <div id="ci-rep-avg-min" class="text-[10px] text-zinc-400 mt-0.5 tabular-nums">Média 0 min/dia</div>
+          </div>
+          <div class="bg-[#19191f] border border-zinc-800/80 rounded-2xl p-3 text-center">
+            <div class="text-[11px] text-zinc-400">Modalidades</div>
+            <div id="ci-rep-breakdown" class="text-xs sm:text-sm font-bold text-zinc-100 mt-1.5 tabular-nums">0M • 0K • 0C • 0B • 0N • 0E</div>
+            <div class="text-[10px] text-zinc-400 mt-0.5">Musc • Kung • Cor • Bike • Nad • Ext</div>
+          </div>
+        </div>
+
+        <!-- Gráfico de Atividades no Período -->
+        <div class="bg-[#19191f] border border-zinc-800/80 rounded-2xl p-3.5 mb-5">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <span id="ci-rep-chart-title" class="text-xs font-semibold text-zinc-200">Minutos treinados nos últimos 7 dias</span>
+            <div class="flex flex-wrap items-center gap-2.5 text-[11px] text-zinc-400">
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-sky-400"></span> Musc.</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span> Kung Fu</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-violet-400"></span> Corrida</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-cyan-400"></span> Bicicleta</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-indigo-400"></span> Natação</span>
+              <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400"></span> Extra</span>
+            </div>
+          </div>
+          <div id="ci-rep-chart-container" class="w-full overflow-x-auto pb-1"></div>
+        </div>
+
+        <!-- Lista de Check-ins do Período -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <h4 class="text-xs font-semibold text-zinc-200">Check-ins no período</h4>
+            <span id="ci-rep-count-label" class="text-[11px] text-zinc-400">0 check-ins</span>
+          </div>
+          <div id="ci-rep-list" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    (() => {
+      // =====================================================================
+      // METADADOS E CONFIGURAÇÕES DO PAINEL DE MACROS
+      // =====================================================================
+      const MEAL_META = [
+        {
+          id: 'breakfast',
+          name: '1. Café da Manhã',
+          time: 'Manhã',
+          color: '#38bdf8',
+          maxProtein: 60,
+          maxCarbs: 40,
+          hint: 'Base: 2 ovos + 2 fatias de queijo zero carbo (opcional: +1 ovo ou pão de forma).'
+        },
+        {
+          id: 'lunch',
+          name: '2. Almoço',
+          time: '12:00 – 12:30',
+          color: '#34d399',
+          maxProtein: 95,
+          maxCarbs: 80,
+          hint: 'Base: 180–220g carne/frango/peixe + feijão (colheres de sopa) + arroz (colheres de sopa).'
+        },
+        {
+          id: 'snack',
+          name: '3. Lanche da Tarde',
+          time: '15:20',
+          color: '#fbbf24',
+          maxProtein: 60,
+          maxCarbs: 55,
+          hint: 'Opções: Pão de forma Pullman + queijo + ovos OU ovos cozidos + queijo + pão de forma.'
+        },
+        {
+          id: 'dinner',
+          name: '4. Jantar',
+          time: '19:00',
+          color: '#fb7185',
+          maxProtein: 95,
+          maxCarbs: 80,
+          hint: 'Base: 180–220g carne/frango/peixe/ovos + feijão (colheres de sopa) + arroz (colheres de sopa).'
+        }
+      ];
+
+      const PROFILES = {
+        musculacao: {
+          label: 'Seg / Qua / Sex — Musculação (14:00)',
+          targetProtein: 162,
+          targetCarbs: 115,
+          rangeLabel: 'Faixa alvo: 100–140g',
+          meals: {
+            breakfast: { protein: 24, carbs: 2, eggs: 2, cheese: 2, bread: 0, beans: 0, rice: 0, meat: 0 },
+            lunch:     { protein: 58, carbs: 42, beans: 8, rice: 2.5, meat: 200 },
+            snack:     { protein: 32, carbs: 35, eggs: 2, cheese: 2, bread: 2.5, beans: 0, rice: 0, meat: 0 },
+            dinner:    { protein: 54, carbs: 36, beans: 6, rice: 2, meat: 185 }
+          }
+        },
+        kungfu: {
+          label: 'Ter / Qui — Kung Fu (20:15)',
+          targetProtein: 162,
+          targetCarbs: 115,
+          rangeLabel: 'Faixa alvo: 100–140g',
+          meals: {
+            breakfast: { protein: 24, carbs: 2, eggs: 2, cheese: 2, bread: 0, beans: 0, rice: 0, meat: 0 },
+            lunch:     { protein: 54, carbs: 36, beans: 6, rice: 2, meat: 185 },
+            snack:     { protein: 32, carbs: 32, eggs: 2, cheese: 2, bread: 2, beans: 0, rice: 0, meat: 0 },
+            dinner:    { protein: 58, carbs: 45, beans: 8, rice: 3, meat: 200 }
+          }
+        },
+        descanso: {
+          label: 'Dias sem treino — Descanso',
+          targetProtein: 160,
+          targetCarbs: 85,
+          rangeLabel: 'Faixa alvo: 75–100g',
+          meals: {
+            breakfast: { protein: 24, carbs: 1, eggs: 2, cheese: 2, bread: 0, beans: 0, rice: 0, meat: 0 },
+            lunch:     { protein: 55, carbs: 30, beans: 6, rice: 1.5, meat: 190 },
+            snack:     { protein: 32, carbs: 22, eggs: 2, cheese: 2, bread: 1.5, beans: 0, rice: 0, meat: 0 },
+            dinner:    { protein: 55, carbs: 32, beans: 6, rice: 2, meat: 190 }
+          }
+        }
+      };
+
+      const DEFAULT_PRESETS = {
+        breakfast: [
+          { id: 'b-1', label: '2 ovos + 2 queijo zero carbo', protein: 24, carbs: 2, eggs: 2, cheese: 2, bread: 0 },
+          { id: 'b-2', label: '3 ovos + 2 queijo + 1 pão', protein: 32, carbs: 14, eggs: 3, cheese: 2, bread: 1 },
+          { id: 'b-3', label: '2 ovos + 2 pão de forma', protein: 17, carbs: 25, eggs: 2, cheese: 0, bread: 2 }
+        ],
+        lunch: [
+          { id: 'l-1', label: '200g carne/frango + 6 col. feijão + 2 col. arroz', protein: 63, carbs: 31, meat: 200, beans: 6, rice: 2 },
+          { id: 'l-2', label: '200g carne + 8 col. feijão + 2,5 col. arroz', protein: 66, carbs: 41, meat: 200, beans: 8, rice: 2.5 }
+        ],
+        snack: [
+          { id: 's-1', label: '2 pão Pullman + 3 queijo + 2 ovos', protein: 35, carbs: 26, eggs: 2, cheese: 3, bread: 2 },
+          { id: 's-2', label: '2 ovos cozidos + 2 queijo + 1,5 pão', protein: 28, carbs: 20, eggs: 2, cheese: 2, bread: 1.5 },
+          { id: 's-3', label: '3 ovos cozidos + 1 pão de forma', protein: 21, carbs: 14, eggs: 3, cheese: 0, bread: 1 }
+        ],
+        dinner: [
+          { id: 'd-1', label: '180g carne + 6 col. feijão + 2 col. arroz', protein: 58, carbs: 31, meat: 180, beans: 6, rice: 2 },
+          { id: 'd-2', label: '200g carne + 8 col. feijão + 3 col. arroz', protein: 66, carbs: 43, meat: 200, beans: 8, rice: 3 }
+        ]
+      };
+
+      // Metadados das modalidades de treino (Aba 2)
+      const ACTIVITY_META = {
+        musculacao: {
+          label: 'Musculação',
+          short: 'Musc.',
+          badgeClass: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
+          barColor: 'bg-sky-400',
+          dotColor: '#38bdf8',
+          defaultDuration: 60
+        },
+        kungfu: {
+          label: 'Kung Fu',
+          short: 'Kung Fu',
+          badgeClass: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+          barColor: 'bg-emerald-400',
+          dotColor: '#34d399',
+          defaultDuration: 75
+        },
+        corrida: {
+          label: 'Corrida',
+          short: 'Corrida',
+          badgeClass: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
+          barColor: 'bg-violet-400',
+          dotColor: '#a78bfa',
+          defaultDuration: 40
+        },
+        bicicleta: {
+          label: 'Bicicleta',
+          short: 'Bike',
+          badgeClass: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+          barColor: 'bg-cyan-400',
+          dotColor: '#22d3ee',
+          defaultDuration: 50
+        },
+        natacao: {
+          label: 'Natação',
+          short: 'Natação',
+          badgeClass: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
+          barColor: 'bg-indigo-400',
+          dotColor: '#818cf8',
+          defaultDuration: 45
+        },
+        cardio: {
+          label: 'Cardio / Extra',
+          short: 'Extra',
+          badgeClass: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+          barColor: 'bg-amber-400',
+          dotColor: '#fbbf24',
+          defaultDuration: 40
+        }
+      };
+
+      // Estado unificado do aplicativo
+      const state = {
+        activeTab: 'macros', // 'macros' | 'checkin'
+        activeProfile: 'musculacao',
+        targetProtein: 162,
+        targetCarbs: 115,
+        compositionMode: 'combined',
+        reportPeriod: 'weekly',
+        dailyLogs: {},
+        expanded: { breakfast: true, lunch: true, snack: true, dinner: true },
+        meals: JSON.parse(JSON.stringify(PROFILES.musculacao.meals)),
+        presets: JSON.parse(JSON.stringify(DEFAULT_PRESETS)),
+        // Estado do Check-in de Atividades Físicas
+        checkins: {}, // Mapa 'YYYY-MM-DD' -> Array de { id, date, type, duration, note, updatedAt }
+        ciFilter: 'all',
+        ciReportPeriod: 'weekly',
+        ciWeeklyGoal: 5
+      };
+
+      let editingPresetMealId = null;
+
+      // Referências de elementos do DOM
+      const els = {
+        navTabMacros: document.getElementById('nav-tab-macros'),
+        navTabCheckin: document.getElementById('nav-tab-checkin'),
+        navCheckinBadge: document.getElementById('nav-checkin-badge'),
+        viewMacros: document.getElementById('view-macros'),
+        viewCheckin: document.getElementById('view-checkin'),
+        profileBtns: document.querySelectorAll('.profile-btn'),
+        inputTotalProtein: document.getElementById('input-total-protein'),
+        inputTotalCarbs: document.getElementById('input-total-carbs'),
+        btnTotalPDec: document.getElementById('btn-total-p-dec'),
+        btnTotalPInc: document.getElementById('btn-total-p-inc'),
+        btnTotalCDec: document.getElementById('btn-total-c-dec'),
+        btnTotalCInc: document.getElementById('btn-total-c-inc'),
+        kpiProteinSub: document.getElementById('kpi-protein-sub'),
+        kpiCarbsRange: document.getElementById('kpi-carbs-range'),
+        kpiCarbsDiff: document.getElementById('kpi-carbs-diff'),
+        kpiCarbsStatus: document.getElementById('kpi-carbs-status'),
+        inputTargetProtein: document.getElementById('input-target-protein'),
+        inputTargetCarbs: document.getElementById('input-target-carbs'),
+        compositionBar: document.getElementById('composition-bar'),
+        compositionLegend: document.getElementById('composition-legend'),
+        mealsContainer: document.getElementById('meals-container'),
+        btnResetDay: document.getElementById('btn-reset-day'),
+        modeCombined: document.getElementById('mode-combined'),
+        modeProtein: document.getElementById('mode-protein'),
+        modeCarbs: document.getElementById('mode-carbs'),
+        statusToast: document.getElementById('status-toast'),
+        statusToastText: document.getElementById('status-toast-text'),
+        btnCloseToast: document.getElementById('btn-close-toast'),
+        syncDot: document.getElementById('sync-dot'),
+        syncText: document.getElementById('sync-text'),
+        btnReloadApp: document.getElementById('btn-reload-app'),
+        btnOpenReport: document.getElementById('btn-open-report'),
+        btnLogToday: document.getElementById('btn-log-today'),
+        reportModal: document.getElementById('report-modal'),
+        btnCloseReportModal: document.getElementById('btn-close-report-modal'),
+        btnReportWeekly: document.getElementById('btn-report-weekly'),
+        btnReportMonthly: document.getElementById('btn-report-monthly'),
+        inputReportDate: document.getElementById('input-report-date'),
+        btnSaveDateLog: document.getElementById('btn-save-date-log'),
+        repAvgProtein: document.getElementById('rep-avg-protein'),
+        repMetaProtein: document.getElementById('rep-meta-protein'),
+        repAvgCarbs: document.getElementById('rep-avg-carbs'),
+        repMetaCarbs: document.getElementById('rep-meta-carbs'),
+        repAdherence: document.getElementById('rep-adherence'),
+        repAdherencePct: document.getElementById('rep-adherence-pct'),
+        repChartTitle: document.getElementById('rep-chart-title'),
+        repChartContainer: document.getElementById('rep-chart-container'),
+        repCountLabel: document.getElementById('rep-count-label'),
+        repHistoryList: document.getElementById('rep-history-list'),
+        presetModal: document.getElementById('preset-modal'),
+        presetModalTitle: document.getElementById('preset-modal-title'),
+        presetEditorList: document.getElementById('preset-editor-list'),
+        btnClosePresetModal: document.getElementById('btn-close-preset-modal'),
+        btnAddPreset: document.getElementById('btn-add-preset'),
+        btnResetMealPresets: document.getElementById('btn-reset-meal-presets'),
+        btnSavePresets: document.getElementById('btn-save-presets'),
+        // Elementos da Aba 2 (Check-in de Atividades Físicas)
+        ciSyncDot: document.getElementById('ci-sync-dot'),
+        ciSyncText: document.getElementById('ci-sync-text'),
+        ciKpiCount: document.getElementById('ci-kpi-count'),
+        ciKpiPct: document.getElementById('ci-kpi-pct'),
+        ciKpiMinutes: document.getElementById('ci-kpi-minutes'),
+        ciKpiHours: document.getElementById('ci-kpi-hours'),
+        ciKpiStreak: document.getElementById('ci-kpi-streak'),
+        ciKpiMonthTotal: document.getElementById('ci-kpi-month-total'),
+        ciWeekRangeLabel: document.getElementById('ci-week-range-label'),
+        ciWeekGrid: document.getElementById('ci-week-grid'),
+        ciInputDate: document.getElementById('ci-input-date'),
+        ciInputDuration: document.getElementById('ci-input-duration'),
+        ciInputNote: document.getElementById('ci-input-note'),
+        ciQuickBtns: document.querySelectorAll('.ci-quick-btn'),
+        ciFilterBtns: document.querySelectorAll('.ci-filter-btn'),
+        ciHistoryList: document.getElementById('ci-history-list'),
+        btnOpenCiReport: document.getElementById('btn-open-ci-report'),
+        ciReportModal: document.getElementById('ci-report-modal'),
+        btnCloseCiReport: document.getElementById('btn-close-ci-report'),
+        btnCiRepWeekly: document.getElementById('btn-ci-rep-weekly'),
+        btnCiRepMonthly: document.getElementById('btn-ci-rep-monthly'),
+        ciWeeklyGoalInput: document.getElementById('ci-weekly-goal-input'),
+        ciRepSessions: document.getElementById('ci-rep-sessions'),
+        ciRepGoalPct: document.getElementById('ci-rep-goal-pct'),
+        ciRepTotalMin: document.getElementById('ci-rep-total-min'),
+        ciRepAvgMin: document.getElementById('ci-rep-avg-min'),
+        ciRepBreakdown: document.getElementById('ci-rep-breakdown'),
+        ciRepChartTitle: document.getElementById('ci-rep-chart-title'),
+        ciRepChartContainer: document.getElementById('ci-rep-chart-container'),
+        ciRepCountLabel: document.getElementById('ci-rep-count-label'),
+        ciRepList: document.getElementById('ci-rep-list')
+      };
+
+      // Controle de sincronização em nuvem e persistência offline (IndexedDB)
+      let db = null;
+      let currentUser = null;
+      let saveTimer = null;
+      let isApplyingRemote = false;
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+      const IDB_NAME = 'dieta_treinos_app_db';
+      const IDB_STORE = 'state_store';
+
+      /**
+       * Abre conexão com o banco persistente do navegador (IndexedDB).
+       */
+      function openAppDatabase() {
+        return new Promise((resolve, reject) => {
+          if (!('indexedDB' in window)) {
+            reject(new Error('IndexedDB indisponível'));
+            return;
+          }
+          const req = indexedDB.open(IDB_NAME, 1);
+          req.onupgradeneeded = (e) => {
+            const database = e.target.result;
+            if (!database.objectStoreNames.contains(IDB_STORE)) {
+              database.createObjectStore(IDB_STORE);
+            }
+          };
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      }
+
+      /**
+       * Grava uma cópia completa do estado (macros, presets, registros e check-ins) no dispositivo.
+       */
+      async function saveStateToDevice() {
+        try {
+          const database = await openAppDatabase();
+          const tx = database.transaction(IDB_STORE, 'readwrite');
+          const store = tx.objectStore(IDB_STORE);
+          store.put(
+            {
+              activeProfile: state.activeProfile,
+              targetProtein: state.targetProtein,
+              targetCarbs: state.targetCarbs,
+              compositionMode: state.compositionMode,
+              meals: state.meals,
+              presets: state.presets,
+              dailyLogs: state.dailyLogs,
+              checkins: state.checkins,
+              ciWeeklyGoal: state.ciWeeklyGoal,
+              updatedAt: Date.now()
+            },
+            'app_snapshot'
+          );
+          await new Promise((resolve, reject) => {
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error);
+          });
+        } catch (err) {
+          console.warn('Falha ao gravar backup no aparelho:', err);
+        }
+      }
+
+      /**
+       * Restaura o estado salvo anteriormente no dispositivo ao abrir o aplicativo.
+       */
+      async function loadStateFromDevice() {
+        try {
+          const database = await openAppDatabase();
+          const tx = database.transaction(IDB_STORE, 'readonly');
+          const store = tx.objectStore(IDB_STORE);
+          const req = store.get('app_snapshot');
+          const saved = await new Promise((resolve, reject) => {
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+          });
+          if (!saved) return false;
+
+          if (saved.activeProfile && PROFILES[saved.activeProfile]) {
+            state.activeProfile = saved.activeProfile;
+          }
+          if (typeof saved.targetProtein === 'number') state.targetProtein = saved.targetProtein;
+          if (typeof saved.targetCarbs === 'number') state.targetCarbs = saved.targetCarbs;
+          if (saved.compositionMode) state.compositionMode = saved.compositionMode;
+          if (saved.meals) state.meals = { ...state.meals, ...saved.meals };
+          if (saved.presets) state.presets = { ...state.presets, ...saved.presets };
+          if (saved.dailyLogs && typeof saved.dailyLogs === 'object') state.dailyLogs = saved.dailyLogs;
+          if (saved.checkins && typeof saved.checkins === 'object') state.checkins = saved.checkins;
+          if (typeof saved.ciWeeklyGoal === 'number') state.ciWeeklyGoal = saved.ciWeeklyGoal;
+          return true;
+        } catch (err) {
+          console.warn('Falha ao ler backup do aparelho:', err);
+          return false;
+        }
+      }
+
+      /**
+       * Formata um objeto Date local para YYYY-MM-DD.
+       */
+      function toLocalDateStr(dateObj) {
+        const yyyy = dateObj.getFullYear();
+        const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const dd = String(dateObj.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      /**
+       * Retorna a data local de hoje formatada como YYYY-MM-DD.
+       */
+      function getTodayDateStr() {
+        return toLocalDateStr(new Date());
+      }
+
+      /**
+       * Formata YYYY-MM-DD para DD/MM.
+       */
+      function formatShortDate(dateStr) {
+        const parts = String(dateStr || '').split('-');
+        if (parts.length !== 3) return dateStr;
+        return `${parts[2]}/${parts[1]}`;
+      }
+
+      /**
+       * Escapa caracteres especiais HTML para renderização segura.
+       */
+      function escapeHtml(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      /**
+       * Alterna entre as abas principais ('macros' e 'checkin').
+       */
+      function switchMainTab(tabKey) {
+        state.activeTab = tabKey === 'checkin' ? 'checkin' : 'macros';
+        const isMacros = state.activeTab === 'macros';
+
+        if (els.viewMacros) els.viewMacros.classList.toggle('hidden', !isMacros);
+        if (els.viewCheckin) els.viewCheckin.classList.toggle('hidden', isMacros);
+
+        if (els.navTabMacros) {
+          els.navTabMacros.setAttribute('aria-selected', String(isMacros));
+          els.navTabMacros.className = isMacros
+            ? 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold bg-zinc-800 text-zinc-100 border border-zinc-700/80 transition cursor-pointer'
+            : 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/70 border border-transparent transition cursor-pointer';
+        }
+
+        if (els.navTabCheckin) {
+          els.navTabCheckin.setAttribute('aria-selected', String(!isMacros));
+          els.navTabCheckin.className = !isMacros
+            ? 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-semibold bg-zinc-800 text-zinc-100 border border-zinc-700/80 transition cursor-pointer'
+            : 'flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900/70 border border-transparent transition cursor-pointer';
+        }
+      }
+
+      /**
+       * Retorna todos os check-ins em uma lista única achatada.
+       */
+      function getFlattenedCheckins() {
+        const list = [];
+        Object.keys(state.checkins || {}).forEach((dateKey) => {
+          const items = state.checkins[dateKey];
+          if (Array.isArray(items)) {
+            items.forEach((entry) => list.push(entry));
+          }
+        });
+        return list;
+      }
+
+      /**
+       * Registra um novo check-in de atividade física (permitindo múltiplos no mesmo dia).
+       */
+      async function saveWorkoutCheckin(dateStr, type, duration, note) {
+        const targetDate = dateStr || getTodayDateStr();
+        const actType = ACTIVITY_META[type] ? type : 'musculacao';
+        const dur = clamp(duration || ACTIVITY_META[actType].defaultDuration, 5, 600);
+        const cleanNote = String(note || '').trim();
+        const id = `ci-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+
+        const entry = {
+          id,
+          date: targetDate,
+          type: actType,
+          duration: dur,
+          note: cleanNote,
+          updatedAt: Date.now()
+        };
+
+        if (!Array.isArray(state.checkins[targetDate])) {
+          state.checkins[targetDate] = [];
+        }
+        state.checkins[targetDate].push(entry);
+
+        await saveStateToDevice();
+        renderCheckinPanel();
+        if (els.ciReportModal && !els.ciReportModal.classList.contains('hidden')) {
+          renderCheckinReportModal();
+        }
+
+        if (db && currentUser) {
+          try {
+            setSyncStatus('saving', 'Salvando check-in...');
+            const dayRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'workoutCheckins', targetDate);
+            await setDoc(dayRef, { date: targetDate, items: state.checkins[targetDate], updatedAt: Date.now() });
+            setSyncStatus('online', 'Salvo na nuvem');
+          } catch (err) {
+            console.error('Erro ao salvar check-in:', err);
+            setSyncStatus('online', 'Salvo no aparelho');
+          }
+        } else {
+          setSyncStatus('online', 'Salvo no aparelho');
+        }
+
+        showToast(`Check-in registrado: ${ACTIVITY_META[actType].label} (${dur} min) em ${formatShortDate(targetDate)}.`);
+      }
+
+      /**
+       * Remove um check-in específico de uma data.
+       */
+      async function deleteWorkoutCheckin(dateStr, entryId) {
+        if (!dateStr || !Array.isArray(state.checkins[dateStr])) return;
+        if (entryId) {
+          state.checkins[dateStr] = state.checkins[dateStr].filter((item) => item.id !== entryId);
+        } else {
+          state.checkins[dateStr].pop();
+        }
+
+        const remaining = state.checkins[dateStr];
+        if (remaining.length === 0) {
+          delete state.checkins[dateStr];
+        }
+
+        await saveStateToDevice();
+        renderCheckinPanel();
+        if (els.ciReportModal && !els.ciReportModal.classList.contains('hidden')) {
+          renderCheckinReportModal();
+        }
+
+        if (db && currentUser) {
+          try {
+            const dayRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'workoutCheckins', dateStr);
+            if (remaining.length === 0) {
+              await deleteDoc(dayRef);
+            } else {
+              await setDoc(dayRef, { date: dateStr, items: remaining, updatedAt: Date.now() });
+            }
+          } catch (err) {
+            console.error('Erro ao excluir check-in:', err);
+          }
+        }
+
+        showToast(`Check-in de ${formatShortDate(dateStr)} removido.`);
+      }
+
+      /**
+       * Salva o fechamento de um dia específico de macros no histórico e na nuvem.
+       */
+      async function saveDailyLogEntry(dateStr) {
+        const targetDate = dateStr || getTodayDateStr();
+        const { totalProtein, totalCarbs } = getTotals();
+        const entry = {
+          date: targetDate,
+          profile: state.activeProfile,
+          protein: totalProtein,
+          carbs: totalCarbs,
+          targetProtein: state.targetProtein,
+          targetCarbs: state.targetCarbs,
+          updatedAt: Date.now()
+        };
+        state.dailyLogs[targetDate] = entry;
+        await saveStateToDevice();
+        renderReportModal();
+
+        if (db && currentUser) {
+          try {
+            setSyncStatus('saving', 'Registrando...');
+            const logRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'macroLogs', targetDate);
+            await setDoc(logRef, entry);
+            setSyncStatus('online', 'Salvo na nuvem');
+          } catch (err) {
+            console.error('Erro ao salvar registro diário:', err);
+            setSyncStatus('online', 'Salvo no aparelho');
+          }
+        } else {
+          setSyncStatus('online', 'Salvo no aparelho');
+        }
+        showToast(`Dia ${formatShortDate(targetDate)} registrado: ${totalProtein}g Prot • ${totalCarbs}g Carbo.`);
+      }
+
+      /**
+       * Remove um registro diário de macros do histórico e da nuvem.
+       */
+      async function deleteDailyLogEntry(dateStr) {
+        if (!dateStr || !state.dailyLogs[dateStr]) return;
+        delete state.dailyLogs[dateStr];
+        await saveStateToDevice();
+        renderReportModal();
+        if (db && currentUser) {
+          try {
+            const logRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'macroLogs', dateStr);
+            await deleteDoc(logRef);
+          } catch (err) {
+            console.error('Erro ao remover registro diário:', err);
+          }
+        }
+        showToast(`Registro de ${formatShortDate(dateStr)} removido.`);
+      }
+
+      /**
+       * Atualiza os indicadores visuais de sincronização na nuvem (ambas as abas).
+       */
+      function setSyncStatus(status, text) {
+        const colors = {
+          online: 'bg-emerald-400',
+          saving: 'bg-amber-400 animate-pulse',
+          offline: 'bg-zinc-500'
+        };
+        const dotClass = `w-2 h-2 rounded-full ${colors[status] || colors.offline}`;
+        if (els.syncDot && els.syncText) {
+          els.syncDot.className = dotClass;
+          els.syncText.textContent = text;
+        }
+        if (els.ciSyncDot && els.ciSyncText) {
+          els.ciSyncDot.className = dotClass;
+          els.ciSyncText.textContent = text;
+        }
+      }
+
+      /**
+       * Agenda o salvamento automático no dispositivo e no Firestore.
+       */
+      function scheduleCloudSave() {
+        if (isApplyingRemote) return;
+        setSyncStatus('saving', 'Salvando...');
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(async () => {
+          await saveStateToDevice();
+          if (!db || !currentUser) {
+            setSyncStatus('online', 'Salvo no aparelho');
+            return;
+          }
+          try {
+            const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'macroState', 'current');
+            await setDoc(docRef, {
+              activeProfile: state.activeProfile,
+              targetProtein: state.targetProtein,
+              targetCarbs: state.targetCarbs,
+              compositionMode: state.compositionMode,
+              meals: state.meals,
+              presets: state.presets,
+              ciWeeklyGoal: state.ciWeeklyGoal,
+              updatedAt: Date.now()
+            });
+            setSyncStatus('online', 'Salvo na nuvem');
+          } catch (err) {
+            console.error('Erro ao salvar na nuvem:', err);
+            setSyncStatus('online', 'Salvo no aparelho');
+          }
+        }, 300);
+      }
+
+      /**
+       * Inicializa autenticação e escuta em tempo real do Firestore.
+       */
+      async function initCloudSync() {
+        try {
+          if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+            setSyncStatus('online', 'Salvo no aparelho');
+            return;
+          }
+          const firebaseConfig = JSON.parse(__firebase_config);
+          const app = initializeApp(firebaseConfig);
+          const auth = getAuth(app);
+          db = getFirestore(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+
+          currentUser = auth.currentUser;
+          if (!currentUser) {
+            setSyncStatus('online', 'Salvo no aparelho');
+            return;
+          }
+
+          const docRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'macroState', 'current');
+          onSnapshot(
+            docRef,
+            (snap) => {
+              if (!snap.exists()) {
+                setSyncStatus('online', 'Salvo na nuvem');
+                return;
+              }
+              const data = snap.data();
+              isApplyingRemote = true;
+              if (data.activeProfile && PROFILES[data.activeProfile]) {
+                state.activeProfile = data.activeProfile;
+              }
+              if (typeof data.targetProtein === 'number') state.targetProtein = data.targetProtein;
+              if (typeof data.targetCarbs === 'number') state.targetCarbs = data.targetCarbs;
+              if (data.compositionMode) state.compositionMode = data.compositionMode;
+              if (data.meals) state.meals = { ...state.meals, ...data.meals };
+              if (data.presets) state.presets = { ...state.presets, ...data.presets };
+              if (typeof data.ciWeeklyGoal === 'number') state.ciWeeklyGoal = data.ciWeeklyGoal;
+              saveStateToDevice();
+              renderAll();
+              renderCheckinPanel();
+              isApplyingRemote = false;
+              setSyncStatus('online', 'Sincronizado');
+            },
+            (err) => {
+              console.error('Erro na sincronização:', err);
+              setSyncStatus('online', 'Salvo no aparelho');
+            }
+          );
+
+          const logsCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'macroLogs');
+          onSnapshot(
+            logsCol,
+            (snapshot) => {
+              const updatedLogs = {};
+              snapshot.forEach((docSnap) => {
+                const item = docSnap.data();
+                if (item && item.date) {
+                  updatedLogs[item.date] = item;
+                }
+              });
+              state.dailyLogs = updatedLogs;
+              saveStateToDevice();
+              if (els.reportModal && !els.reportModal.classList.contains('hidden')) {
+                renderReportModal();
+              }
+            },
+            (err) => {
+              console.error('Erro ao carregar histórico diário:', err);
+            }
+          );
+
+          const checkinsCol = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'workoutCheckins');
+          onSnapshot(
+            checkinsCol,
+            (snapshot) => {
+              const updatedCheckins = {};
+              snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                if (!data) return;
+                const dKey = data.date || docSnap.id;
+                if (Array.isArray(data.items)) {
+                  updatedCheckins[dKey] = data.items;
+                } else if (data.type) {
+                  updatedCheckins[dKey] = [{ id: docSnap.id, ...data, date: dKey }];
+                }
+              });
+              state.checkins = updatedCheckins;
+              saveStateToDevice();
+              renderCheckinPanel();
+              if (els.ciReportModal && !els.ciReportModal.classList.contains('hidden')) {
+                renderCheckinReportModal();
+              }
+            },
+            (err) => {
+              console.error('Erro ao carregar check-ins:', err);
+            }
+          );
+        } catch (err) {
+          console.warn('Sincronização em nuvem indisponível:', err);
+          setSyncStatus('online', 'Salvo no aparelho');
+        }
+      }
+
+      /**
+       * Limita um valor numérico dentro de [min, max].
+       */
+      function clamp(val, min, max) {
+        const num = Number(val);
+        if (Number.isNaN(num)) return min;
+        return Math.min(Math.max(num, min), max);
+      }
+
+      /**
+       * Soma os totais atuais de proteína e carboidrato das 4 refeições.
+       */
+      function getTotals() {
+        let totalProtein = 0;
+        let totalCarbs = 0;
+        MEAL_META.forEach((meal) => {
+          const item = state.meals[meal.id] || { protein: 0, carbs: 0 };
+          totalProtein += Number(item.protein) || 0;
+          totalCarbs += Number(item.carbs) || 0;
+        });
+        return { totalProtein: Math.round(totalProtein * 10) / 10, totalCarbs: Math.round(totalCarbs * 10) / 10 };
+      }
+
+      /**
+       * Redistribui proporcionalmente um novo total de proteína ou carboidrato entre as 4 refeições.
+       */
+      function redistributeMacroTotal(macro, newTotalRaw) {
+        const maxTotal = macro === 'protein' ? 400 : 500;
+        const newTotal = Math.round(clamp(newTotalRaw, 0, maxTotal));
+        const currentSum = MEAL_META.reduce((acc, m) => acc + (Number(state.meals[m.id][macro]) || 0), 0);
+
+        if (currentSum === 0) {
+          const baseWeights =
+            macro === 'protein'
+              ? { breakfast: 0.12, lunch: 0.36, snack: 0.2, dinner: 0.32 }
+              : { breakfast: 0.02, lunch: 0.36, snack: 0.28, dinner: 0.34 };
+          let allocated = 0;
+          MEAL_META.forEach((m, idx) => {
+            if (idx === MEAL_META.length - 1) {
+              state.meals[m.id][macro] = Math.max(0, newTotal - allocated);
+            } else {
+              const part = Math.round(newTotal * baseWeights[m.id]);
+              state.meals[m.id][macro] = part;
+              allocated += part;
+            }
+          });
+          return;
+        }
+
+        let allocated = 0;
+        MEAL_META.forEach((m, idx) => {
+          if (idx === MEAL_META.length - 1) {
+            state.meals[m.id][macro] = Math.max(0, newTotal - allocated);
+          } else {
+            const share = (Number(state.meals[m.id][macro]) || 0) / currentSum;
+            const part = Math.round(newTotal * share);
+            state.meals[m.id][macro] = part;
+            allocated += part;
+          }
+        });
+      }
+
+      /**
+       * Aplica um perfil de dia (musculação, kungfu ou descanso) e atualiza o painel.
+       */
+      function applyProfile(profileKey) {
+        const prof = PROFILES[profileKey];
+        if (!prof) return;
+        state.activeProfile = profileKey;
+        state.targetProtein = prof.targetProtein;
+        state.targetCarbs = prof.targetCarbs;
+        state.meals = JSON.parse(JSON.stringify(prof.meals));
+        renderAll();
+        scheduleCloudSave();
+      }
+
+      /**
+       * Renderiza o estado visual ativo das abas de perfil de dia.
+       */
+      function renderProfileTabs() {
+        els.profileBtns.forEach((btn) => {
+          const key = btn.getAttribute('data-profile');
+          const isActive = key === state.activeProfile;
+          btn.setAttribute('aria-selected', String(isActive));
+          if (isActive) {
+            btn.className =
+              'profile-btn text-left p-3 rounded-2xl border border-zinc-500/80 bg-[#1b1b21] shadow-sm transition cursor-pointer';
+          } else {
+            btn.className =
+              'profile-btn text-left p-3 rounded-2xl border border-zinc-800/80 bg-[#15151a] hover:bg-[#19191f] opacity-80 hover:opacity-100 transition cursor-pointer';
+          }
+        });
+      }
+
+      /**
+       * Atualiza os indicadores superiores (Total Proteína, Total Carboidrato, Balanço e Metas).
+       */
+      function renderHeaderAndTargets(skipTotalInputs = false) {
+        const { totalProtein, totalCarbs } = getTotals();
+        const prof = PROFILES[state.activeProfile] || PROFILES.musculacao;
+
+        if (!skipTotalInputs) {
+          if (document.activeElement !== els.inputTotalProtein) {
+            els.inputTotalProtein.value = totalProtein;
+          }
+          if (document.activeElement !== els.inputTotalCarbs) {
+            els.inputTotalCarbs.value = totalCarbs;
+          }
+        }
+
+        if (document.activeElement !== els.inputTargetProtein) {
+          els.inputTargetProtein.value = state.targetProtein;
+        }
+        if (document.activeElement !== els.inputTargetCarbs) {
+          els.inputTargetCarbs.value = state.targetCarbs;
+        }
+
+        const pDiff = Math.round((totalProtein - state.targetProtein) * 10) / 10;
+        els.kpiProteinSub.textContent =
+          pDiff === 0
+            ? `Meta: ${state.targetProtein}g (exato)`
+            : pDiff > 0
+              ? `Meta: ${state.targetProtein}g (+${pDiff}g)`
+              : `Meta: ${state.targetProtein}g (${pDiff}g)`;
+        els.kpiProteinSub.className = `text-[11px] mt-1 tabular-nums ${
+          pDiff >= -5 ? 'text-emerald-400' : 'text-amber-400'
+        }`;
+
+        els.kpiCarbsRange.textContent = prof.rangeLabel;
+
+        const cDiff = Math.round((totalCarbs - state.targetCarbs) * 10) / 10;
+        const estKcal = Math.round(totalProtein * 4 + totalCarbs * 4);
+        els.kpiCarbsDiff.textContent = cDiff > 0 ? `+${cDiff}g` : `${cDiff}g`;
+
+        if (Math.abs(cDiff) <= 5) {
+          els.kpiCarbsDiff.className = 'text-lg sm:text-2xl font-bold text-emerald-400 mt-1 tabular-nums';
+          els.kpiCarbsStatus.textContent = `No alvo • ~${estKcal} kcal P+C`;
+        } else if (cDiff > 5) {
+          els.kpiCarbsDiff.className = 'text-lg sm:text-2xl font-bold text-amber-400 mt-1 tabular-nums';
+          els.kpiCarbsStatus.textContent = `Acima do alvo • ~${estKcal} kcal`;
+        } else {
+          els.kpiCarbsDiff.className = 'text-lg sm:text-2xl font-bold text-sky-400 mt-1 tabular-nums';
+          els.kpiCarbsStatus.textContent = `Abaixo do alvo • ~${estKcal} kcal`;
+        }
+      }
+
+      /**
+       * Renderiza a barra segmentada horizontal de composição das 4 refeições e sua legenda.
+       */
+      function renderCompositionBar() {
+        const modes = [
+          { el: els.modeCombined, key: 'combined' },
+          { el: els.modeProtein, key: 'protein' },
+          { el: els.modeCarbs, key: 'carbs' }
+        ];
+        modes.forEach(({ el, key }) => {
+          if (!el) return;
+          if (state.compositionMode === key) {
+            el.className = 'comp-mode-btn px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-zinc-700 text-zinc-100 transition cursor-pointer';
+          } else {
+            el.className = 'comp-mode-btn px-2.5 py-1 rounded-lg text-[11px] font-medium text-zinc-400 hover:text-zinc-200 transition cursor-pointer';
+          }
+        });
+
+        const values = MEAL_META.map((m) => {
+          const item = state.meals[m.id] || { protein: 0, carbs: 0 };
+          if (state.compositionMode === 'protein') return Number(item.protein) || 0;
+          if (state.compositionMode === 'carbs') return Number(item.carbs) || 0;
+          return (Number(item.protein) || 0) + (Number(item.carbs) || 0);
+        });
+
+        const sum = values.reduce((a, b) => a + b, 0);
+        els.compositionBar.innerHTML = '';
+        els.compositionLegend.innerHTML = '';
+
+        MEAL_META.forEach((meal, idx) => {
+          const val = values[idx];
+          const pct = sum > 0 ? (val / sum) * 100 : 25;
+          const pctRounded = Math.round(pct);
+
+          const seg = document.createElement('div');
+          seg.className = 'h-full first:rounded-l-full last:rounded-r-full transition-all duration-200';
+          seg.style.width = `${pct}%`;
+          seg.style.backgroundColor = meal.color;
+          seg.title = `${meal.name}: ${pctRounded}%`;
+          els.compositionBar.appendChild(seg);
+
+          const leg = document.createElement('div');
+          leg.className = 'flex items-center justify-between bg-[#17171c] border border-zinc-800/70 rounded-xl px-2.5 py-1.5';
+          leg.innerHTML = `
+            <span class="flex items-center gap-1.5 text-zinc-300 truncate">
+              <span class="w-2 h-2 rounded-full shrink-0" style="background-color:${meal.color}"></span>
+              <span class="truncate text-[11px]">${meal.name}</span>
+            </span>
+            <span class="text-[11px] font-semibold text-zinc-100 ml-1 tabular-nums">${pctRounded}%</span>
+          `;
+          els.compositionLegend.appendChild(leg);
+        });
+      }
+
+      /**
+       * Abre o modal de edição de presets para a refeição selecionada.
+       */
+      function openPresetEditor(mealId) {
+        const meta = MEAL_META.find((m) => m.id === mealId);
+        if (!meta) return;
+        editingPresetMealId = mealId;
+        els.presetModalTitle.textContent = `Presets • ${meta.name}`;
+        renderPresetEditorRows();
+        els.presetModal.classList.remove('hidden');
+      }
+
+      /**
+       * Renderiza os 4 acordeões expansíveis de refeições com sliders, porções e botões rápidos.
+       */
+      function renderMealsAccordion() {
+        if (!els.mealsContainer) return;
+        const { totalProtein, totalCarbs } = getTotals();
+        els.mealsContainer.innerHTML = '';
+
+        MEAL_META.forEach((meal) => {
+          const item = state.meals[meal.id] || { protein: 0, carbs: 0, meat: 180, beans: 6, rice: 2, eggs: 2, cheese: 2, bread: 0 };
+          const isOpen = Boolean(state.expanded[meal.id]);
+          const pPct = totalProtein > 0 ? Math.round((item.protein / totalProtein) * 100) : 0;
+          const cPct = totalCarbs > 0 ? Math.round((item.carbs / totalCarbs) * 100) : 0;
+          const isPlateMeal = meal.id === 'lunch' || meal.id === 'dinner';
+          const isLightMeal = meal.id === 'breakfast' || meal.id === 'snack';
+          const customPresets = state.presets[meal.id] || [];
+
+          const card = document.createElement('div');
+          card.className = 'bg-[#17171c] border border-zinc-800/80 rounded-2xl overflow-hidden transition';
+
+          const headerBtn = document.createElement('button');
+          headerBtn.type = 'button';
+          headerBtn.setAttribute('aria-expanded', String(isOpen));
+          headerBtn.className =
+            'w-full flex items-center justify-between px-4 py-3.5 text-left hover:bg-zinc-800/35 transition cursor-pointer';
+          headerBtn.innerHTML = `
+            <div class="flex items-center gap-2.5 min-w-0">
+              <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color:${meal.color}"></span>
+              <div class="min-w-0">
+                <div class="text-sm font-semibold text-zinc-100 truncate">${meal.name}</div>
+                <div class="text-[11px] text-zinc-400">${meal.time}</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 ml-2">
+              <div class="text-right tabular-nums">
+                <div class="text-xs sm:text-sm font-semibold text-zinc-100">
+                  ${item.protein}g <span class="text-zinc-400 font-normal">P</span> • ${item.carbs}g <span class="text-zinc-400 font-normal">C</span>
+                </div>
+                <div class="text-[11px] text-zinc-400">
+                  ${pPct}% prot • ${cPct}% carbo
+                </div>
+              </div>
+              <svg class="w-4 h-4 text-zinc-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          `;
+
+          headerBtn.addEventListener('click', () => {
+            state.expanded[meal.id] = !state.expanded[meal.id];
+            renderMealsAccordion();
+          });
+
+          const body = document.createElement('div');
+          body.className = isOpen ? 'px-4 pb-4 pt-1 border-t border-zinc-800/60 space-y-4' : 'hidden';
+
+          const portionControlsHtml = isPlateMeal
+            ? `
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <div class="bg-[#111114] border border-zinc-800/80 rounded-xl p-2 text-center">
+                  <div class="text-[10px] text-zinc-400">Carne/Frango</div>
+                  <div class="flex items-center justify-center gap-1.5 mt-1">
+                    <button type="button" data-action="meat-dec" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">-</button>
+                    <span class="text-xs font-semibold text-zinc-100 tabular-nums">${item.meat || 180}g</span>
+                    <button type="button" data-action="meat-inc" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">+</button>
+                  </div>
+                </div>
+                <div class="bg-[#111114] border border-zinc-800/80 rounded-xl p-2 text-center">
+                  <div class="text-[10px] text-zinc-400">Feijão (col. sopa)</div>
+                  <div class="flex items-center justify-center gap-1.5 mt-1">
+                    <button type="button" data-action="beans-dec" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">-</button>
+                    <span class="text-xs font-semibold text-zinc-100 tabular-nums">${item.beans ?? 6}</span>
+                    <button type="button" data-action="beans-inc" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">+</button>
+                  </div>
+                </div>
+                <div class="bg-[#111114] border border-zinc-800/80 rounded-xl p-2 text-center">
+                  <div class="text-[10px] text-zinc-400">Arroz (col. sopa)</div>
+                  <div class="flex items-center justify-center gap-1.5 mt-1">
+                    <button type="button" data-action="rice-dec" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">-</button>
+                    <span class="text-xs font-semibold text-zinc-100 tabular-nums">${item.rice ?? 2}</span>
+                    <button type="button" data-action="rice-inc" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">+</button>
+                  </div>
+                </div>
+              </div>
+            `
+            : isLightMeal
+              ? `
+              <div class="grid grid-cols-3 gap-2 pt-1">
+                <div class="bg-[#111114] border border-zinc-800/80 rounded-xl p-2 text-center">
+                  <div class="text-[10px] text-zinc-400">Ovos (unid.)</div>
+                  <div class="flex items-center justify-center gap-1.5 mt-1">
+                    <button type="button" data-action="eggs-dec" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">-</button>
+                    <span class="text-xs font-semibold text-zinc-100 tabular-nums">${item.eggs ?? 2}</span>
+                    <button type="button" data-action="eggs-inc" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">+</button>
+                  </div>
+                </div>
+                <div class="bg-[#111114] border border-zinc-800/80 rounded-xl p-2 text-center">
+                  <div class="text-[10px] text-zinc-400">Queijo (fatias)</div>
+                  <div class="flex items-center justify-center gap-1.5 mt-1">
+                    <button type="button" data-action="cheese-dec" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">-</button>
+                    <span class="text-xs font-semibold text-zinc-100 tabular-nums">${item.cheese ?? 2}</span>
+                    <button type="button" data-action="cheese-inc" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">+</button>
+                  </div>
+                </div>
+                <div class="bg-[#111114] border border-zinc-800/80 rounded-xl p-2 text-center">
+                  <div class="text-[10px] text-zinc-400">Pão de Forma</div>
+                  <div class="flex items-center justify-center gap-1.5 mt-1">
+                    <button type="button" data-action="bread-dec" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">-</button>
+                    <span class="text-xs font-semibold text-zinc-100 tabular-nums">${item.bread ?? 0}</span>
+                    <button type="button" data-action="bread-inc" data-meal="${meal.id}" class="quick-btn w-6 h-6 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-xs font-bold text-zinc-200 cursor-pointer">+</button>
+                  </div>
+                </div>
+              </div>
+            `
+              : '';
+
+          const presetsHtml = customPresets
+            .map(
+              (p, idx) => `
+              <button
+                type="button"
+                data-action="apply-custom-preset"
+                data-meal="${meal.id}"
+                data-preset-idx="${idx}"
+                class="quick-btn px-2.5 py-1.5 rounded-xl bg-[#111114] hover:bg-zinc-800 border border-zinc-800 text-[11px] text-zinc-200 transition cursor-pointer text-left"
+              >
+                ${escapeHtml(p.label)} <span class="text-zinc-400">(${p.protein}g P • ${p.carbs}g C)</span>
+              </button>
+            `
+            )
+            .join('');
+
+          body.innerHTML = `
+            <p class="text-[11px] text-zinc-400">${meal.hint}</p>
+
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-zinc-300 font-medium">Proteína</span>
+                <div class="flex items-center gap-2 tabular-nums">
+                  <span class="text-[11px] text-zinc-400">${pPct}% do total</span>
+                  <span class="px-2 py-0.5 rounded-lg bg-zinc-800 text-xs font-semibold text-zinc-100">${item.protein}g</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="${meal.maxProtein}"
+                step="1"
+                value="${item.protein}"
+                data-meal="${meal.id}"
+                data-macro="protein"
+                aria-label="Proteína ${meal.name}"
+                class="macro-slider"
+              />
+            </div>
+
+            <div class="space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-zinc-300 font-medium">Carboidrato</span>
+                <div class="flex items-center gap-2 tabular-nums">
+                  <span class="text-[11px] text-zinc-400">${cPct}% do total</span>
+                  <span class="px-2 py-0.5 rounded-lg bg-zinc-800 text-xs font-semibold text-zinc-100">${item.carbs}g</span>
+                </div>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="${meal.maxCarbs}"
+                step="0.5"
+                value="${item.carbs}"
+                data-meal="${meal.id}"
+                data-macro="carbs"
+                aria-label="Carboidrato ${meal.name}"
+                class="macro-slider"
+              />
+            </div>
+
+            ${portionControlsHtml}
+
+            <div class="pt-1">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[11px] text-zinc-400">Atalhos rápidos:</span>
+                <button
+                  type="button"
+                  data-action="open-preset-editor"
+                  data-meal="${meal.id}"
+                  class="quick-btn text-[11px] font-medium text-sky-400 hover:text-sky-300 cursor-pointer"
+                >
+                  Editar presets
+                </button>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                ${presetsHtml}
+              </div>
+            </div>
+          `;
+
+          body.querySelectorAll('.macro-slider').forEach((slider) => {
+            slider.addEventListener('input', (e) => {
+              const mId = e.target.getAttribute('data-meal');
+              const macro = e.target.getAttribute('data-macro');
+              state.meals[mId][macro] = Number(e.target.value) || 0;
+              renderHeaderAndTargets();
+              renderCompositionBar();
+              updateSliderBadgesOnly(mId);
+              scheduleCloudSave();
+            });
+          });
+
+          body.querySelectorAll('.quick-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const action = btn.getAttribute('data-action');
+              const mId = btn.getAttribute('data-meal');
+              const pIdx = btn.getAttribute('data-preset-idx');
+              handleQuickAction(action, mId, pIdx);
+            });
+          });
+
+          card.appendChild(headerBtn);
+          card.appendChild(body);
+          els.mealsContainer.appendChild(card);
+        });
+      }
+
+      /**
+       * Gera a lista dos últimos N dias combinando registros salvos e o dia atual.
+       */
+      function getPeriodTimeline(daysCount) {
+        const todayStr = getTodayDateStr();
+        const { totalProtein, totalCarbs } = getTotals();
+        const timeline = [];
+
+        for (let i = daysCount - 1; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const dateStr = toLocalDateStr(d);
+          const saved = state.dailyLogs[dateStr];
+
+          if (saved) {
+            timeline.push({ ...saved, isLivePreview: false });
+          } else if (dateStr === todayStr) {
+            timeline.push({
+              date: dateStr,
+              profile: state.activeProfile,
+              protein: totalProtein,
+              carbs: totalCarbs,
+              targetProtein: state.targetProtein,
+              targetCarbs: state.targetCarbs,
+              isLivePreview: true
+            });
+          } else {
+            timeline.push({
+              date: dateStr,
+              profile: null,
+              protein: 0,
+              carbs: 0,
+              targetProtein: state.targetProtein,
+              targetCarbs: state.targetCarbs,
+              isEmpty: true
+            });
+          }
+        }
+        return timeline;
+      }
+
+      /**
+       * Renderiza o modal de Relatório Semanal / Mensal de Macros.
+       */
+      function renderReportModal() {
+        if (!els.reportModal) return;
+        const isWeekly = state.reportPeriod === 'weekly';
+        const daysCount = isWeekly ? 7 : 30;
+
+        els.btnReportWeekly.className = isWeekly
+          ? 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-700 text-zinc-100 transition cursor-pointer'
+          : 'px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 transition cursor-pointer';
+        els.btnReportMonthly.className = !isWeekly
+          ? 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-700 text-zinc-100 transition cursor-pointer'
+          : 'px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 transition cursor-pointer';
+
+        els.repChartTitle.textContent = isWeekly
+          ? 'Evolução nos últimos 7 dias (% da meta diária)'
+          : 'Evolução nos últimos 30 dias (% da meta diária)';
+
+        const timeline = getPeriodTimeline(daysCount);
+        const activeEntries = timeline.filter((item) => !item.isEmpty);
+
+        const count = activeEntries.length;
+        const avgP = count > 0 ? Math.round(activeEntries.reduce((s, x) => s + Number(x.protein || 0), 0) / count) : 0;
+        const avgC = count > 0 ? Math.round(activeEntries.reduce((s, x) => s + Number(x.carbs || 0), 0) / count) : 0;
+        const avgTargetP = count > 0 ? Math.round(activeEntries.reduce((s, x) => s + Number(x.targetProtein || state.targetProtein), 0) / count) : state.targetProtein;
+        const avgTargetC = count > 0 ? Math.round(activeEntries.reduce((s, x) => s + Number(x.targetCarbs || state.targetCarbs), 0) / count) : state.targetCarbs;
+
+        const avgPPct =
+          count > 0
+            ? Math.round(
+                activeEntries.reduce((s, x) => {
+                  const tP = Number(x.targetProtein) || state.targetProtein || 1;
+                  return s + (Number(x.protein || 0) / tP) * 100;
+                }, 0) / count
+              )
+            : 0;
+
+        const avgCPct =
+          count > 0
+            ? Math.round(
+                activeEntries.reduce((s, x) => {
+                  const tC = Number(x.targetCarbs) || state.targetCarbs || 1;
+                  return s + (Number(x.carbs || 0) / tC) * 100;
+                }, 0) / count
+              )
+            : 0;
+
+        const daysOnTarget = activeEntries.filter((x) => {
+          const tP = Number(x.targetProtein) || state.targetProtein || 1;
+          const tC = Number(x.targetCarbs) || state.targetCarbs || 1;
+          const pPct = (Number(x.protein) / tP) * 100;
+          const cPct = (Number(x.carbs) / tC) * 100;
+          return pPct >= 95 && cPct >= 90 && cPct <= 112;
+        }).length;
+
+        const adherencePct = count > 0 ? Math.round((daysOnTarget / count) * 100) : 0;
+
+        els.repAvgProtein.textContent = `${avgPPct}%`;
+        els.repMetaProtein.textContent = `Média: ${avgP}g / ${avgTargetP}g`;
+        els.repAvgCarbs.textContent = `${avgCPct}%`;
+        els.repMetaCarbs.textContent = `Média: ${avgC}g / ${avgTargetC}g`;
+        els.repAdherence.textContent = `${daysOnTarget}/${count}`;
+        els.repAdherencePct.textContent = `${adherencePct}% dentro da meta`;
+
+        const maxScalePct = Math.max(
+          125,
+          ...timeline.map((t) => {
+            if (t.isEmpty) return 0;
+            const tP = Number(t.targetProtein) || state.targetProtein || 1;
+            const tC = Number(t.targetCarbs) || state.targetCarbs || 1;
+            return Math.max(Math.round((Number(t.protein) / tP) * 100), Math.round((Number(t.carbs) / tC) * 100));
+          })
+        );
+        const targetLineBottomPct = Math.round((100 / maxScalePct) * 100);
+
+        const barsHtml = timeline
+          .map((item) => {
+            const tP = Number(item.targetProtein) || state.targetProtein || 1;
+            const tC = Number(item.targetCarbs) || state.targetCarbs || 1;
+            const pPctRaw = item.isEmpty ? 0 : Math.round((Number(item.protein) / tP) * 100);
+            const cPctRaw = item.isEmpty ? 0 : Math.round((Number(item.carbs) / tC) * 100);
+
+            const pHeight = item.isEmpty ? 4 : Math.max(6, Math.round((pPctRaw / maxScalePct) * 100));
+            const cHeight = item.isEmpty ? 4 : Math.max(6, Math.round((cPctRaw / maxScalePct) * 100));
+            const label = formatShortDate(item.date);
+            const opacityClass = item.isEmpty ? 'opacity-25' : item.isLivePreview ? 'opacity-85' : 'opacity-100';
+            const titleText = item.isEmpty
+              ? `${label}: Sem registro`
+              : `${label}${item.isLivePreview ? ' (Hoje - prévia)' : ''}: Prot ${pPctRaw}% (${item.protein}g/${tP}g) • Carbo ${cPctRaw}% (${item.carbs}g/${tC}g)`;
+
+            return `
+              <div class="flex flex-col items-center gap-1 ${isWeekly ? 'flex-1 min-w-[36px]' : 'min-w-[18px] flex-1'} ${opacityClass}" title="${escapeHtml(titleText)}">
+                <div class="relative w-full h-28 flex items-end justify-center gap-0.5 bg-[#121216] rounded-lg px-0.5 pt-2 pb-0.5 border border-zinc-800/50 overflow-hidden">
+                  <div class="w-full border-t border-dashed border-zinc-500/40 pointer-events-none absolute left-0" style="bottom:${targetLineBottomPct}%"></div>
+                  <div class="w-1/2 rounded-t bg-sky-400 transition-all z-10" style="height:${pHeight}%"></div>
+                  <div class="w-1/2 rounded-t bg-emerald-400 transition-all z-10" style="height:${cHeight}%"></div>
+                </div>
+                <span class="text-[9px] text-zinc-400 tabular-nums">${isWeekly || Number(label.slice(0, 2)) % 3 === 1 ? label : ''}</span>
+              </div>
+            `;
+          })
+          .join('');
+
+        els.repChartContainer.innerHTML = `<div class="flex items-end gap-1.5 ${isWeekly ? 'w-full' : 'min-w-[600px]'}">${barsHtml}</div>`;
+
+        const reversedEntries = [...activeEntries].reverse();
+        els.repCountLabel.textContent = `${reversedEntries.length} ${reversedEntries.length === 1 ? 'registro' : 'registros'}`;
+
+        if (reversedEntries.length === 0) {
+          els.repHistoryList.innerHTML = `
+            <div class="text-center py-6 text-xs text-zinc-400 bg-[#19191f] rounded-2xl border border-zinc-800/60">
+              Nenhum registro salvo neste período. Clique em <strong>Registrar dia</strong> para salvar o fechamento diário.
+            </div>
+          `;
+          return;
+        }
+
+        const profileNames = {
+          musculacao: 'Musculação',
+          kungfu: 'Kung Fu',
+          descanso: 'Descanso'
+        };
+
+        els.repHistoryList.innerHTML = reversedEntries
+          .map((item) => {
+            const tP = Number(item.targetProtein) || state.targetProtein || 1;
+            const tC = Number(item.targetCarbs) || state.targetCarbs || 1;
+            const pPct = Math.round((Number(item.protein) / tP) * 100);
+            const cPct = Math.round((Number(item.carbs) / tC) * 100);
+            const pOk = pPct >= 95;
+            const cOk = cPct >= 90 && cPct <= 112;
+            const profLabel = profileNames[item.profile] || 'Dia';
+
+            const badgeHtml = item.isLivePreview
+              ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300">Prévia de hoje</span>`
+              : pOk && cOk
+                ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">Meta batida</span>`
+                : `<span class="text-[10px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300">${profLabel}</span>`;
+
+            const deleteBtnHtml = item.isLivePreview
+              ? ''
+              : `<button type="button" data-del-log="${item.date}" aria-label="Excluir registro ${item.date}" class="btn-del-log text-[11px] text-zinc-500 hover:text-rose-400 transition cursor-pointer ml-1">✕</button>`;
+
+            return `
+              <div class="flex items-center justify-between bg-[#19191f] border border-zinc-800/80 rounded-2xl px-3.5 py-2.5 text-xs">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span class="font-semibold text-zinc-100 tabular-nums">${formatShortDate(item.date)}</span>
+                  ${badgeHtml}
+                </div>
+                <div class="flex items-center gap-3 tabular-nums">
+                  <div class="text-right">
+                    <span class="font-bold text-sky-400">${pPct}%</span>
+                    <span class="text-[10px] text-zinc-400">Prot (${item.protein}g/${tP}g)</span>
+                  </div>
+                  <div class="text-right">
+                    <span class="font-bold text-emerald-400">${cPct}%</span>
+                    <span class="text-[10px] text-zinc-400">Carbo (${item.carbs}g/${tC}g)</span>
+                  </div>
+                  ${deleteBtnHtml}
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+        els.repHistoryList.querySelectorAll('.btn-del-log').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const dStr = btn.getAttribute('data-del-log');
+            deleteDailyLogEntry(dStr);
+          });
+        });
+      }
+
+      /**
+       * Renderiza as linhas editáveis do modal de presets rápidos.
+       */
+      function renderPresetEditorRows() {
+        if (!editingPresetMealId) return;
+        const list = state.presets[editingPresetMealId] || [];
+        const isPlateMeal = editingPresetMealId === 'lunch' || editingPresetMealId === 'dinner';
+        const isLightMeal = editingPresetMealId === 'breakfast' || editingPresetMealId === 'snack';
+        els.presetEditorList.innerHTML = '';
+
+        list.forEach((preset, idx) => {
+          const row = document.createElement('div');
+          row.className = 'bg-[#111114] border border-zinc-800/90 rounded-2xl p-3 space-y-2.5';
+          row.innerHTML = `
+            <div class="flex items-center gap-2">
+              <input
+                type="text"
+                data-field="label"
+                data-idx="${idx}"
+                value="${escapeHtml(preset.label)}"
+                placeholder="Nome do preset"
+                class="preset-input w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-3 py-1.5 text-xs text-zinc-100 focus:outline-none"
+              />
+              <button
+                type="button"
+                data-remove-idx="${idx}"
+                aria-label="Excluir preset"
+                class="btn-remove-preset px-2.5 py-1.5 rounded-xl bg-zinc-900 hover:bg-rose-500/20 text-zinc-400 hover:text-rose-300 border border-zinc-800 text-xs transition cursor-pointer shrink-0"
+              >
+                Excluir
+              </button>
+            </div>
+            <div class="grid ${isPlateMeal || isLightMeal ? 'grid-cols-2 sm:grid-cols-5' : 'grid-cols-2'} gap-2 text-xs">
+              <div>
+                <label class="block text-[10px] text-zinc-400 mb-1">Proteína (g)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="150"
+                  step="0.5"
+                  data-field="protein"
+                  data-idx="${idx}"
+                  value="${Number(preset.protein) || 0}"
+                  class="preset-input clean-number w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-zinc-100 focus:outline-none tabular-nums"
+                />
+              </div>
+              <div>
+                <label class="block text-[10px] text-zinc-400 mb-1">Carboidrato (g)</label>
+                <input
+                  type="number"
+                  min="0"
+                  max="150"
+                  step="0.5"
+                  data-field="carbs"
+                  data-idx="${idx}"
+                  value="${Number(preset.carbs) || 0}"
+                  class="preset-input clean-number w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-zinc-100 focus:outline-none tabular-nums"
+                />
+              </div>
+              ${
+                isPlateMeal
+                  ? `
+                <div>
+                  <label class="block text-[10px] text-zinc-400 mb-1">Carne (g)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="400"
+                    step="10"
+                    data-field="meat"
+                    data-idx="${idx}"
+                    value="${Number(preset.meat) || 0}"
+                    class="preset-input clean-number w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none tabular-nums"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[10px] text-zinc-400 mb-1">Feijão (col. sopa)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="15"
+                    step="0.5"
+                    data-field="beans"
+                    data-idx="${idx}"
+                    value="${Number(preset.beans) || 0}"
+                    class="preset-input clean-number w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none tabular-nums"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[10px] text-zinc-400 mb-1">Arroz (col. sopa)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="12"
+                    step="0.5"
+                    data-field="rice"
+                    data-idx="${idx}"
+                    value="${Number(preset.rice) || 0}"
+                    class="preset-input clean-number w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none tabular-nums"
+                  />
+                </div>
+              `
+                  : isLightMeal
+                    ? `
+                <div>
+                  <label class="block text-[10px] text-zinc-400 mb-1">Ovos (unid.)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="1"
+                    data-field="eggs"
+                    data-idx="${idx}"
+                    value="${Number(preset.eggs) || 0}"
+                    class="preset-input clean-number w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none tabular-nums"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[10px] text-zinc-400 mb-1">Queijo (fatias)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="1"
+                    data-field="cheese"
+                    data-idx="${idx}"
+                    value="${Number(preset.cheese) || 0}"
+                    class="preset-input clean-number w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none tabular-nums"
+                  />
+                </div>
+                <div>
+                  <label class="block text-[10px] text-zinc-400 mb-1">Pão de Forma</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="8"
+                    step="0.5"
+                    data-field="bread"
+                    data-idx="${idx}"
+                    value="${Number(preset.bread) || 0}"
+                    class="preset-input clean-number w-full bg-[#18181d] border border-zinc-800 focus:border-zinc-500 rounded-xl px-2.5 py-1.5 text-xs text-zinc-200 focus:outline-none tabular-nums"
+                  />
+                </div>
+              `
+                    : ''
+              }
+            </div>
+          `;
+          els.presetEditorList.appendChild(row);
+        });
+
+        els.presetEditorList.querySelectorAll('.preset-input').forEach((inp) => {
+          inp.addEventListener('input', (e) => {
+            const idx = Number(e.target.getAttribute('data-idx'));
+            const field = e.target.getAttribute('data-field');
+            if (!state.presets[editingPresetMealId][idx]) return;
+            if (field === 'label') {
+              state.presets[editingPresetMealId][idx].label = e.target.value;
+            } else {
+              state.presets[editingPresetMealId][idx][field] = Number(e.target.value) || 0;
+            }
+          });
+        });
+
+        els.presetEditorList.querySelectorAll('.btn-remove-preset').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.getAttribute('data-remove-idx'));
+            state.presets[editingPresetMealId].splice(idx, 1);
+            renderPresetEditorRows();
+          });
+        });
+      }
+
+      /**
+       * Atualiza os percentuais e valores das badges nos acordeões enquanto o slider é arrastado.
+       */
+      function updateSliderBadgesOnly() {
+        const { totalProtein, totalCarbs } = getTotals();
+        const cards = els.mealsContainer.children;
+
+        MEAL_META.forEach((meal, index) => {
+          const card = cards[index];
+          if (!card) return;
+          const item = state.meals[meal.id];
+          const pPct = totalProtein > 0 ? Math.round((item.protein / totalProtein) * 100) : 0;
+          const cPct = totalCarbs > 0 ? Math.round((item.carbs / totalCarbs) * 100) : 0;
+
+          const headerRight = card.querySelector('button .text-right.tabular-nums');
+          if (headerRight) {
+            headerRight.innerHTML = `
+              <div class="text-xs sm:text-sm font-semibold text-zinc-100">
+                ${item.protein}g <span class="text-zinc-400 font-normal">P</span> • ${item.carbs}g <span class="text-zinc-400 font-normal">C</span>
+              </div>
+              <div class="text-[11px] text-zinc-400">
+                ${pPct}% prot • ${cPct}% carbo
+              </div>
+            `;
+          }
+
+          const bodySliders = card.querySelectorAll('.tabular-nums');
+          if (bodySliders[1]) {
+            bodySliders[1].innerHTML = `
+              <span class="text-[11px] text-zinc-400">${pPct}% do total</span>
+              <span class="px-2 py-0.5 rounded-lg bg-zinc-800 text-xs font-semibold text-zinc-100">${item.protein}g</span>
+            `;
+          }
+          if (bodySliders[2]) {
+            bodySliders[2].innerHTML = `
+              <span class="text-[11px] text-zinc-400">${cPct}% do total</span>
+              <span class="px-2 py-0.5 rounded-lg bg-zinc-800 text-xs font-semibold text-zinc-100">${item.carbs}g</span>
+            `;
+          }
+        });
+      }
+
+      /**
+       * Exibe mensagem discreta de feedback.
+       */
+      function showToast(message) {
+        if (!els.statusToast || !els.statusToastText) return;
+        els.statusToastText.textContent = message;
+        els.statusToast.classList.remove('hidden');
+      }
+
+      /**
+       * Executa os ajustes rápidos de porções e presets de cada refeição.
+       */
+      function handleQuickAction(action, mealId, presetIdx) {
+        try {
+          if (action === 'open-preset-editor' && mealId) {
+            openPresetEditor(mealId);
+            return;
+          }
+
+          if (action === 'apply-custom-preset' && mealId) {
+            const list = state.presets[mealId] || [];
+            const preset = list[Number(presetIdx)];
+            if (!preset) return;
+            const meta = MEAL_META.find((m) => m.id === mealId);
+            const maxP = meta ? meta.maxProtein : 95;
+            const maxC = meta ? meta.maxCarbs : 80;
+            state.meals[mealId].protein = clamp(preset.protein, 0, maxP);
+            state.meals[mealId].carbs = clamp(preset.carbs, 0, maxC);
+            if (mealId === 'lunch' || mealId === 'dinner') {
+              if (typeof preset.meat === 'number') state.meals[mealId].meat = preset.meat;
+              if (typeof preset.beans === 'number') state.meals[mealId].beans = preset.beans;
+              if (typeof preset.rice === 'number') state.meals[mealId].rice = preset.rice;
+            } else if (mealId === 'breakfast' || mealId === 'snack') {
+              if (typeof preset.eggs === 'number') state.meals[mealId].eggs = preset.eggs;
+              if (typeof preset.cheese === 'number') state.meals[mealId].cheese = preset.cheese;
+              if (typeof preset.bread === 'number') state.meals[mealId].bread = preset.bread;
+            }
+          } else if (mealId && state.meals[mealId]) {
+            const targetMeal = state.meals[mealId];
+            const meta = MEAL_META.find((m) => m.id === mealId);
+            const maxP = meta ? meta.maxProtein : 95;
+            const maxC = meta ? meta.maxCarbs : 80;
+
+            if (action === 'meat-inc') {
+              targetMeal.meat = Math.min(300, (Number(targetMeal.meat) || 180) + 20);
+              targetMeal.protein = clamp(targetMeal.protein + 6, 0, maxP);
+            } else if (action === 'meat-dec') {
+              targetMeal.meat = Math.max(100, (Number(targetMeal.meat) || 180) - 20);
+              targetMeal.protein = clamp(targetMeal.protein - 6, 0, maxP);
+            } else if (action === 'beans-inc') {
+              targetMeal.beans = Math.min(15, (Number(targetMeal.beans) || 0) + 1);
+              targetMeal.carbs = clamp(Math.round((targetMeal.carbs + 3.5) * 10) / 10, 0, maxC);
+              targetMeal.protein = clamp(targetMeal.protein + 1, 0, maxP);
+            } else if (action === 'beans-dec') {
+              targetMeal.beans = Math.max(0, (Number(targetMeal.beans) || 0) - 1);
+              targetMeal.carbs = clamp(Math.round((targetMeal.carbs - 3.5) * 10) / 10, 0, maxC);
+              targetMeal.protein = clamp(targetMeal.protein - 1, 0, maxP);
+            } else if (action === 'rice-inc') {
+              targetMeal.rice = Math.min(12, (Number(targetMeal.rice) || 0) + 0.5);
+              targetMeal.carbs = clamp(Math.round((targetMeal.carbs + 2.5) * 10) / 10, 0, maxC);
+            } else if (action === 'rice-dec') {
+              targetMeal.rice = Math.max(0, (Number(targetMeal.rice) || 0) - 0.5);
+              targetMeal.carbs = clamp(Math.round((targetMeal.carbs - 2.5) * 10) / 10, 0, maxC);
+            } else if (action === 'eggs-inc') {
+              targetMeal.eggs = Math.min(10, (Number(targetMeal.eggs) || 0) + 1);
+              targetMeal.protein = clamp(targetMeal.protein + 6, 0, maxP);
+              targetMeal.carbs = clamp(Math.round((targetMeal.carbs + 0.5) * 10) / 10, 0, maxC);
+            } else if (action === 'eggs-dec') {
+              targetMeal.eggs = Math.max(0, (Number(targetMeal.eggs) || 0) - 1);
+              targetMeal.protein = clamp(targetMeal.protein - 6, 0, maxP);
+              targetMeal.carbs = clamp(Math.round((targetMeal.carbs - 0.5) * 10) / 10, 0, maxC);
+            } else if (action === 'cheese-inc') {
+              targetMeal.cheese = Math.min(10, (Number(targetMeal.cheese) || 0) + 1);
+              targetMeal.protein = clamp(Math.round((targetMeal.protein + 5.5) * 10) / 10, 0, maxP);
+            } else if (action === 'cheese-dec') {
+              targetMeal.cheese = Math.max(0, (Number(targetMeal.cheese) || 0) - 1);
+              targetMeal.protein = clamp(Math.round((targetMeal.protein - 5.5) * 10) / 10, 0, maxP);
+            } else if (action === 'bread-inc') {
+              targetMeal.bread = Math.min(8, (Number(targetMeal.bread) || 0) + 0.5);
+              targetMeal.carbs = clamp(targetMeal.carbs + 6, 0, maxC);
+              targetMeal.protein = clamp(targetMeal.protein + 1, 0, maxP);
+            } else if (action === 'bread-dec') {
+              targetMeal.bread = Math.max(0, (Number(targetMeal.bread) || 0) - 0.5);
+              targetMeal.carbs = clamp(targetMeal.carbs - 6, 0, maxC);
+              targetMeal.protein = clamp(targetMeal.protein - 1, 0, maxP);
+            }
+          }
+
+          renderHeaderAndTargets();
+          renderCompositionBar();
+          renderMealsAccordion();
+          scheduleCloudSave();
+        } catch (err) {
+          showToast('Erro ao aplicar ajuste rápido.');
+          console.error(err);
+        }
+      }
+
+      /**
+       * Renderiza todos os componentes do painel de macros.
+       */
+      function renderAll(skipTotalInputs = false) {
+        renderProfileTabs();
+        renderHeaderAndTargets(skipTotalInputs);
+        renderCompositionBar();
+        renderMealsAccordion();
+      }
+
+      /**
+       * Retorna os 7 dias da semana atual (Segunda a Domingo) com data, nome curto e treino planejado.
+       */
+      function getCurrentWeekDates() {
+        const now = new Date();
+        const day = now.getDay(); // 0 = Dom, 1 = Seg ... 6 = Sab
+        const diffToMonday = day === 0 ? -6 : 1 - day;
+        const monday = new Date(now);
+        monday.setDate(now.getDate() + diffToMonday);
+
+        const dayNames = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+        const plannedByIdx = ['musculacao', 'kungfu', 'musculacao', 'kungfu', 'musculacao', null, null];
+
+        const days = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(monday);
+          d.setDate(monday.getDate() + i);
+          days.push({
+            dateStr: toLocalDateStr(d),
+            dayName: dayNames[i],
+            dayNum: String(d.getDate()).padStart(2, '0'),
+            plannedType: plannedByIdx[i]
+          });
+        }
+        return days;
+      }
+
+      /**
+       * Calcula a sequência atual de dias consecutivos com ao menos 1 check-in.
+       */
+      function calculateCheckinStreak() {
+        let streak = 0;
+        const d = new Date();
+        const todayStr = toLocalDateStr(d);
+        const hasToday = Array.isArray(state.checkins[todayStr]) && state.checkins[todayStr].length > 0;
+        if (!hasToday) {
+          d.setDate(d.getDate() - 1);
+        }
+        while (true) {
+          const str = toLocalDateStr(d);
+          const dayItems = state.checkins[str];
+          if (Array.isArray(dayItems) && dayItems.length > 0) {
+            streak += 1;
+            d.setDate(d.getDate() - 1);
+          } else {
+            break;
+          }
+        }
+        return streak;
+      }
+
+      /**
+       * Renderiza todo o painel de Check-in de Atividades Físicas (KPIs, grade semanal e histórico).
+       */
+      function renderCheckinPanel() {
+        const weekDays = getCurrentWeekDates();
+        const todayStr = getTodayDateStr();
+        const goal = Math.max(1, Number(state.ciWeeklyGoal) || 5);
+
+        let weekCount = 0;
+        let weekMinutes = 0;
+        weekDays.forEach((wd) => {
+          const dayList = Array.isArray(state.checkins[wd.dateStr]) ? state.checkins[wd.dateStr] : [];
+          weekCount += dayList.length;
+          dayList.forEach((item) => {
+            weekMinutes += Number(item.duration) || 0;
+          });
+        });
+
+        // Total de atividades nos últimos 30 dias
+        const cutoff30 = new Date();
+        cutoff30.setDate(cutoff30.getDate() - 29);
+        const cutoffStr = toLocalDateStr(cutoff30);
+        const monthTotal = getFlattenedCheckins().filter((c) => c.date >= cutoffStr).length;
+
+        const weekPct = Math.round((weekCount / goal) * 100);
+        const streak = calculateCheckinStreak();
+
+        if (els.navCheckinBadge) {
+          els.navCheckinBadge.textContent = `${weekCount}/${goal}`;
+        }
+        if (els.ciKpiCount) {
+          els.ciKpiCount.textContent = `${weekCount} / ${goal}`;
+          els.ciKpiPct.textContent = `${weekPct}% da meta semanal`;
+          els.ciKpiMinutes.textContent = `${weekMinutes} min`;
+          els.ciKpiHours.textContent = `${(weekMinutes / 60).toFixed(1).replace('.', ',')}h na semana`;
+          els.ciKpiStreak.textContent = `${streak} ${streak === 1 ? 'dia' : 'dias'}`;
+          els.ciKpiMonthTotal.textContent = `${monthTotal} nos últimos 30d`;
+          els.ciWeekRangeLabel.textContent = `${formatShortDate(weekDays[0].dateStr)} – ${formatShortDate(weekDays[6].dateStr)}`;
+        }
+
+        // Renderiza os 7 cartões da semana atual (suporta múltiplas atividades no mesmo dia)
+        if (els.ciWeekGrid) {
+          els.ciWeekGrid.innerHTML = weekDays
+            .map((wd) => {
+              const dayList = Array.isArray(state.checkins[wd.dateStr]) ? state.checkins[wd.dateStr] : [];
+              const isToday = wd.dateStr === todayStr;
+              const firstEntry = dayList[0] || null;
+              const meta = firstEntry ? ACTIVITY_META[firstEntry.type] || ACTIVITY_META.musculacao : null;
+              const plannedMeta = wd.plannedType ? ACTIVITY_META[wd.plannedType] : null;
+
+              const cardStyle = dayList.length > 0
+                ? 'bg-[#1b1b22] border-emerald-500/50 shadow-sm'
+                : isToday
+                  ? 'bg-[#17171c] border-zinc-500'
+                  : 'bg-[#15151a] border-zinc-800/80 opacity-85 hover:opacity-100';
+
+              const statusIcon = dayList.length > 0
+                ? `<span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-[10px] font-bold tabular-nums">${dayList.length > 1 ? `${dayList.length}x` : '✓'}</span>`
+                : `<span class="w-5 h-5 rounded-full border border-zinc-700 flex items-center justify-center text-[10px] text-zinc-500">+</span>`;
+
+              const subText = dayList.length > 1
+                ? `<span class="text-[9px] font-semibold text-emerald-300 truncate w-full text-center">${dayList.length} treinos</span>`
+                : dayList.length === 1
+                  ? `<span class="text-[9px] font-semibold truncate w-full text-center" style="color:${meta.dotColor}">${meta.short}</span>`
+                  : plannedMeta
+                    ? `<span class="text-[9px] text-zinc-500 truncate w-full text-center">${plannedMeta.short}</span>`
+                    : `<span class="text-[9px] text-zinc-600">Livre</span>`;
+
+              return `
+                <button
+                  type="button"
+                  data-toggle-date="${wd.dateStr}"
+                  data-planned="${wd.plannedType || 'cardio'}"
+                  class="ci-day-cell flex flex-col items-center justify-between gap-1.5 py-2.5 px-1 rounded-2xl border transition cursor-pointer ${cardStyle}"
+                  title="${wd.dayName} (${formatShortDate(wd.dateStr)}): ${dayList.length > 0 ? `${dayList.length} atividade(s) • Toque para adicionar outra` : 'Toque para fazer check-in'}"
+                >
+                  <span class="text-[10px] font-medium ${isToday ? 'text-zinc-100 font-semibold' : 'text-zinc-400'}">${wd.dayName}</span>
+                  ${statusIcon}
+                  <span class="text-[11px] font-semibold text-zinc-200 tabular-nums">${wd.dayNum}</span>
+                  ${subText}
+                </button>
+              `;
+            })
+            .join('');
+
+          els.ciWeekGrid.querySelectorAll('.ci-day-cell').forEach((cell) => {
+            cell.addEventListener('click', () => {
+              const dStr = cell.getAttribute('data-toggle-date');
+              const planned = cell.getAttribute('data-planned') || 'musculacao';
+              if (els.ciInputDate) {
+                els.ciInputDate.value = dStr;
+              }
+              const defaultDur = (ACTIVITY_META[planned] || ACTIVITY_META.musculacao).defaultDuration;
+              saveWorkoutCheckin(dStr, planned, defaultDur, '');
+            });
+          });
+        }
+
+        // Atualiza botões de filtro e lista histórica
+        els.ciFilterBtns.forEach((btn) => {
+          const f = btn.getAttribute('data-ci-filter');
+          btn.className =
+            f === state.ciFilter
+              ? 'ci-filter-btn px-2.5 py-1 rounded-lg font-semibold bg-zinc-700 text-zinc-100 cursor-pointer'
+              : 'ci-filter-btn px-2.5 py-1 rounded-lg font-medium text-zinc-400 hover:text-zinc-200 cursor-pointer';
+        });
+
+        if (els.ciHistoryList) {
+          const allEntries = getFlattenedCheckins()
+            .filter((c) => state.ciFilter === 'all' || c.type === state.ciFilter)
+            .sort((a, b) => b.date.localeCompare(a.date) || (b.updatedAt || 0) - (a.updatedAt || 0));
+
+          if (allEntries.length === 0) {
+            els.ciHistoryList.innerHTML = `
+              <div class="text-center py-6 text-xs text-zinc-400 bg-[#17171c] rounded-2xl border border-zinc-800/70">
+                Nenhum check-in registrado neste filtro. Selecione uma modalidade acima para registrar.
+              </div>
+            `;
+            return;
+          }
+
+          els.ciHistoryList.innerHTML = allEntries
+            .map((item) => {
+              const meta = ACTIVITY_META[item.type] || ACTIVITY_META.musculacao;
+              return `
+                <div class="flex items-center justify-between bg-[#17171c] border border-zinc-800/80 rounded-2xl px-3.5 py-2.5 text-xs">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="font-semibold text-zinc-100 tabular-nums shrink-0">${formatShortDate(item.date)}</span>
+                    <span class="text-[11px] font-medium px-2 py-0.5 rounded-full border ${meta.badgeClass} shrink-0">${meta.label}</span>
+                    ${item.note ? `<span class="text-[11px] text-zinc-400 truncate">${escapeHtml(item.note)}</span>` : ''}
+                  </div>
+                  <div class="flex items-center gap-2.5 shrink-0 ml-2">
+                    <span class="text-[11px] font-semibold text-zinc-200 tabular-nums">${item.duration} min</span>
+                    <button
+                      type="button"
+                      data-del-ci-date="${item.date}"
+                      data-del-ci-id="${item.id || ''}"
+                      aria-label="Excluir check-in ${item.date}"
+                      class="btn-del-ci text-[11px] text-zinc-500 hover:text-rose-400 transition cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              `;
+            })
+            .join('');
+
+          els.ciHistoryList.querySelectorAll('.btn-del-ci').forEach((btn) => {
+            btn.addEventListener('click', () => {
+              const dStr = btn.getAttribute('data-del-ci-date');
+              const eId = btn.getAttribute('data-del-ci-id');
+              deleteWorkoutCheckin(dStr, eId);
+            });
+          });
+        }
+      }
+
+      /**
+       * Renderiza o modal de Relatório Semanal / Mensal de Atividades Físicas (suporta múltiplas por dia).
+       */
+      function renderCheckinReportModal() {
+        if (!els.ciReportModal) return;
+        const isWeekly = state.ciReportPeriod === 'weekly';
+        const daysCount = isWeekly ? 7 : 30;
+        const weeklyGoal = Math.max(1, Number(state.ciWeeklyGoal) || 5);
+        const periodGoal = isWeekly ? weeklyGoal : Math.round((weeklyGoal / 7) * 30);
+
+        if (document.activeElement !== els.ciWeeklyGoalInput) {
+          els.ciWeeklyGoalInput.value = weeklyGoal;
+        }
+
+        els.btnCiRepWeekly.className = isWeekly
+          ? 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-700 text-zinc-100 transition cursor-pointer'
+          : 'px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 transition cursor-pointer';
+        els.btnCiRepMonthly.className = !isWeekly
+          ? 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-700 text-zinc-100 transition cursor-pointer'
+          : 'px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 transition cursor-pointer';
+
+        els.ciRepChartTitle.textContent = isWeekly
+          ? 'Minutos treinados nos últimos 7 dias'
+          : 'Minutos treinados nos últimos 30 dias';
+
+        const timeline = [];
+        for (let i = daysCount - 1; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const dateStr = toLocalDateStr(d);
+          const dayItems = Array.isArray(state.checkins[dateStr]) ? state.checkins[dateStr] : [];
+          timeline.push({
+            date: dateStr,
+            entries: dayItems
+          });
+        }
+
+        const active = timeline.flatMap((t) => t.entries);
+        const totalSessions = active.length;
+        const totalMinutes = active.reduce((s, x) => s + (Number(x.duration) || 0), 0);
+        const avgMinutes = totalSessions > 0 ? Math.round(totalMinutes / totalSessions) : 0;
+        const goalPct = periodGoal > 0 ? Math.round((totalSessions / periodGoal) * 100) : 0;
+
+        const muscCount = active.filter((x) => x.type === 'musculacao').length;
+        const kungfuCount = active.filter((x) => x.type === 'kungfu').length;
+        const corridaCount = active.filter((x) => x.type === 'corrida').length;
+        const bikeCount = active.filter((x) => x.type === 'bicicleta').length;
+        const natacaoCount = active.filter((x) => x.type === 'natacao').length;
+        const extraCount = active.filter((x) => x.type === 'cardio').length;
+
+        els.ciRepSessions.textContent = `${totalSessions} / ${periodGoal}`;
+        els.ciRepGoalPct.textContent = `${goalPct}% da meta do período`;
+        els.ciRepTotalMin.textContent = `${totalMinutes} min`;
+        els.ciRepAvgMin.textContent = `Média ${avgMinutes} min/treino`;
+        els.ciRepBreakdown.textContent = `${muscCount}M • ${kungfuCount}K • ${corridaCount}C • ${bikeCount}B • ${natacaoCount}N • ${extraCount}E`;
+
+        // Gráfico de barras somando os minutos de todas as atividades do dia
+        const dailyTotals = timeline.map((t) =>
+          t.entries.reduce((sum, item) => sum + (Number(item.duration) || 0), 0)
+        );
+        const maxMin = Math.max(90, ...dailyTotals);
+
+        const barsHtml = timeline
+          .map((t, idx) => {
+            const label = formatShortDate(t.date);
+            const dayMin = dailyTotals[idx];
+            if (!t.entries.length || dayMin === 0) {
+              return `
+                <div class="flex flex-col items-center gap-1 ${isWeekly ? 'flex-1 min-w-[36px]' : 'min-w-[18px] flex-1'} opacity-25" title="${label}: Descanso">
+                  <div class="w-full h-24 flex items-end justify-center bg-[#121216] rounded-lg p-1 border border-zinc-800/50">
+                    <div class="w-full h-1 rounded bg-zinc-700"></div>
+                  </div>
+                  <span class="text-[9px] text-zinc-400 tabular-nums">${isWeekly || Number(label.slice(0, 2)) % 3 === 1 ? label : ''}</span>
+                </div>
+              `;
+            }
+            const lastEntry = t.entries[t.entries.length - 1];
+            const meta = ACTIVITY_META[lastEntry.type] || ACTIVITY_META.musculacao;
+            const heightPct = Math.max(12, Math.round((dayMin / maxMin) * 100));
+            const namesSummary = t.entries
+              .map((e) => `${(ACTIVITY_META[e.type] || ACTIVITY_META.musculacao).label} (${e.duration}m)`)
+              .join(' + ');
+
+            return `
+              <div class="flex flex-col items-center gap-1 ${isWeekly ? 'flex-1 min-w-[36px]' : 'min-w-[18px] flex-1'}" title="${label}: ${namesSummary} = ${dayMin} min">
+                <div class="w-full h-24 flex items-end justify-center bg-[#121216] rounded-lg p-1 border border-zinc-800/50">
+                  <div class="w-full rounded-t ${meta.barColor} transition-all" style="height:${heightPct}%"></div>
+                </div>
+                <span class="text-[9px] text-zinc-400 tabular-nums">${isWeekly || Number(label.slice(0, 2)) % 3 === 1 ? label : ''}</span>
+              </div>
+            `;
+          })
+          .join('');
+
+        els.ciRepChartContainer.innerHTML = `<div class="flex items-end gap-1.5 ${isWeekly ? 'w-full' : 'min-w-[600px]'}">${barsHtml}</div>`;
+
+        // Lista cronológica reversa de todas as atividades do período
+        const reversed = [...active].sort((a, b) => b.date.localeCompare(a.date) || (b.updatedAt || 0) - (a.updatedAt || 0));
+        els.ciRepCountLabel.textContent = `${reversed.length} ${reversed.length === 1 ? 'check-in' : 'check-ins'}`;
+
+        if (reversed.length === 0) {
+          els.ciRepList.innerHTML = `
+            <div class="text-center py-6 text-xs text-zinc-400 bg-[#19191f] rounded-2xl border border-zinc-800/60">
+              Nenhum check-in registrado neste período.
+            </div>
+          `;
+          return;
+        }
+
+        els.ciRepList.innerHTML = reversed
+          .map((item) => {
+            const meta = ACTIVITY_META[item.type] || ACTIVITY_META.musculacao;
+            return `
+              <div class="flex items-center justify-between bg-[#19191f] border border-zinc-800/80 rounded-2xl px-3.5 py-2.5 text-xs">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <span class="font-semibold text-zinc-100 tabular-nums">${formatShortDate(item.date)}</span>
+                  <span class="text-[11px] font-medium px-2 py-0.5 rounded-full border ${meta.badgeClass}">${meta.label}</span>
+                  ${item.note ? `<span class="text-[11px] text-zinc-400 truncate">${escapeHtml(item.note)}</span>` : ''}
+                </div>
+                <span class="font-semibold text-zinc-200 tabular-nums shrink-0 ml-2">${item.duration} min</span>
+              </div>
+            `;
+          })
+          .join('');
+      }
+
+      // =====================================================================
+      // EVENT LISTENERS GLOBAIS
+      // =====================================================================
+      els.navTabMacros.addEventListener('click', () => switchMainTab('macros'));
+      els.navTabCheckin.addEventListener('click', () => switchMainTab('checkin'));
+
+      // Listeners Macros
+      els.profileBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          applyProfile(btn.getAttribute('data-profile'));
+        });
+      });
+
+      els.inputTotalProtein.addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        if (Number.isNaN(val)) return;
+        redistributeMacroTotal('protein', val);
+        renderAll(true);
+        scheduleCloudSave();
+      });
+
+      els.inputTotalProtein.addEventListener('blur', () => {
+        const { totalProtein } = getTotals();
+        els.inputTotalProtein.value = totalProtein;
+      });
+
+      els.btnTotalPDec.addEventListener('click', () => {
+        const { totalProtein } = getTotals();
+        redistributeMacroTotal('protein', totalProtein - 5);
+        renderAll();
+        scheduleCloudSave();
+      });
+
+      els.btnTotalPInc.addEventListener('click', () => {
+        const { totalProtein } = getTotals();
+        redistributeMacroTotal('protein', totalProtein + 5);
+        renderAll();
+        scheduleCloudSave();
+      });
+
+      els.inputTotalCarbs.addEventListener('input', (e) => {
+        const val = Number(e.target.value);
+        if (Number.isNaN(val)) return;
+        redistributeMacroTotal('carbs', val);
+        renderAll(true);
+        scheduleCloudSave();
+      });
+
+      els.inputTotalCarbs.addEventListener('blur', () => {
+        const { totalCarbs } = getTotals();
+        els.inputTotalCarbs.value = totalCarbs;
+      });
+
+      els.btnTotalCDec.addEventListener('click', () => {
+        const { totalCarbs } = getTotals();
+        redistributeMacroTotal('carbs', totalCarbs - 5);
+        renderAll();
+        scheduleCloudSave();
+      });
+
+      els.btnTotalCInc.addEventListener('click', () => {
+        const { totalCarbs } = getTotals();
+        redistributeMacroTotal('carbs', totalCarbs + 5);
+        renderAll();
+        scheduleCloudSave();
+      });
+
+      els.inputTargetProtein.addEventListener('input', (e) => {
+        state.targetProtein = clamp(e.target.value, 50, 350);
+        renderHeaderAndTargets();
+        scheduleCloudSave();
+      });
+
+      els.inputTargetCarbs.addEventListener('input', (e) => {
+        state.targetCarbs = clamp(e.target.value, 0, 450);
+        renderHeaderAndTargets();
+        scheduleCloudSave();
+      });
+
+      els.btnResetDay.addEventListener('click', () => {
+        applyProfile(state.activeProfile);
+        showToast('Valores restaurados para o padrão do perfil selecionado.');
+      });
+
+      els.modeCombined.addEventListener('click', () => {
+        state.compositionMode = 'combined';
+        renderCompositionBar();
+        scheduleCloudSave();
+      });
+
+      els.modeProtein.addEventListener('click', () => {
+        state.compositionMode = 'protein';
+        renderCompositionBar();
+        scheduleCloudSave();
+      });
+
+      els.modeCarbs.addEventListener('click', () => {
+        state.compositionMode = 'carbs';
+        renderCompositionBar();
+        scheduleCloudSave();
+      });
+
+      els.btnCloseToast.addEventListener('click', () => {
+        els.statusToast.classList.add('hidden');
+      });
+
+      if (els.btnReloadApp) {
+        els.btnReloadApp.addEventListener('click', async () => {
+          try {
+            showToast('Limpando cache e buscando versão mais recente...');
+            if ('serviceWorker' in navigator) {
+              const registrations = await navigator.serviceWorker.getRegistrations();
+              await Promise.all(registrations.map((reg) => reg.unregister()));
+            }
+            if ('caches' in window) {
+              const cacheKeys = await caches.keys();
+              await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+            }
+            const url = new URL(window.location.href);
+            url.searchParams.set('_refresh', String(Date.now()));
+            window.location.replace(url.toString());
+          } catch (err) {
+            console.error('Erro ao atualizar painel:', err);
+            window.location.reload();
+          }
+        });
+      }
+
+      if (els.btnLogToday) {
+        els.btnLogToday.addEventListener('click', () => {
+          saveDailyLogEntry(getTodayDateStr());
+        });
+      }
+
+      if (els.btnOpenReport) {
+        els.btnOpenReport.addEventListener('click', () => {
+          if (els.inputReportDate && !els.inputReportDate.value) {
+            els.inputReportDate.value = getTodayDateStr();
+          }
+          renderReportModal();
+          els.reportModal.classList.remove('hidden');
+        });
+      }
+
+      if (els.btnCloseReportModal) {
+        els.btnCloseReportModal.addEventListener('click', () => {
+          els.reportModal.classList.add('hidden');
+        });
+      }
+
+      if (els.reportModal) {
+        els.reportModal.addEventListener('click', (e) => {
+          if (e.target === els.reportModal) {
+            els.reportModal.classList.add('hidden');
+          }
+        });
+      }
+
+      if (els.btnReportWeekly) {
+        els.btnReportWeekly.addEventListener('click', () => {
+          state.reportPeriod = 'weekly';
+          renderReportModal();
+        });
+      }
+
+      if (els.btnReportMonthly) {
+        els.btnReportMonthly.addEventListener('click', () => {
+          state.reportPeriod = 'monthly';
+          renderReportModal();
+        });
+      }
+
+      if (els.btnSaveDateLog) {
+        els.btnSaveDateLog.addEventListener('click', () => {
+          const selectedDate = els.inputReportDate ? els.inputReportDate.value : getTodayDateStr();
+          saveDailyLogEntry(selectedDate || getTodayDateStr());
+        });
+      }
+
+      els.btnClosePresetModal.addEventListener('click', () => {
+        els.presetModal.classList.add('hidden');
+        renderMealsAccordion();
+        scheduleCloudSave();
+      });
+
+      els.presetModal.addEventListener('click', (e) => {
+        if (e.target === els.presetModal) {
+          els.presetModal.classList.add('hidden');
+          renderMealsAccordion();
+          scheduleCloudSave();
+        }
+      });
+
+      els.btnAddPreset.addEventListener('click', () => {
+        if (!editingPresetMealId) return;
+        const isPlateMeal = editingPresetMealId === 'lunch' || editingPresetMealId === 'dinner';
+        const isLightMeal = editingPresetMealId === 'breakfast' || editingPresetMealId === 'snack';
+        const newPreset = isPlateMeal
+          ? { id: 'p-' + Date.now(), label: 'Novo prato', protein: 58, carbs: 31, meat: 200, beans: 6, rice: 2 }
+          : isLightMeal
+            ? { id: 'p-' + Date.now(), label: 'Novo lanche/café', protein: 24, carbs: 14, eggs: 2, cheese: 2, bread: 1 }
+            : { id: 'p-' + Date.now(), label: 'Novo atalho', protein: 30, carbs: 20 };
+        state.presets[editingPresetMealId].push(newPreset);
+        renderPresetEditorRows();
+      });
+
+      els.btnResetMealPresets.addEventListener('click', () => {
+        if (!editingPresetMealId) return;
+        state.presets[editingPresetMealId] = JSON.parse(JSON.stringify(DEFAULT_PRESETS[editingPresetMealId]));
+        renderPresetEditorRows();
+        showToast('Presets da refeição restaurados para o padrão.');
+      });
+
+      els.btnSavePresets.addEventListener('click', () => {
+        if (editingPresetMealId) {
+          state.presets[editingPresetMealId] = state.presets[editingPresetMealId].map((p, i) => ({
+            ...p,
+            label: (p.label || '').trim() || `Preset ${i + 1}`
+          }));
+        }
+        els.presetModal.classList.add('hidden');
+        renderMealsAccordion();
+        scheduleCloudSave();
+        showToast('Presets salvos com sucesso.');
+      });
+
+      // Listeners Check-in de Atividades Físicas
+      els.ciQuickBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const type = btn.getAttribute('data-ci-type') || 'musculacao';
+          const defaultDur = Number(btn.getAttribute('data-ci-duration')) || 60;
+          const dateVal = els.ciInputDate && els.ciInputDate.value ? els.ciInputDate.value : getTodayDateStr();
+          const noteVal = els.ciInputNote ? els.ciInputNote.value : '';
+          if (els.ciInputDuration) {
+            els.ciInputDuration.value = defaultDur;
+          }
+          saveWorkoutCheckin(dateVal, type, defaultDur, noteVal);
+          if (els.ciInputNote) els.ciInputNote.value = '';
+        });
+      });
+
+      els.ciFilterBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.ciFilter = btn.getAttribute('data-ci-filter') || 'all';
+          renderCheckinPanel();
+        });
+      });
+
+      if (els.btnOpenCiReport) {
+        els.btnOpenCiReport.addEventListener('click', () => {
+          renderCheckinReportModal();
+          els.ciReportModal.classList.remove('hidden');
+        });
+      }
+
+      if (els.btnCloseCiReport) {
+        els.btnCloseCiReport.addEventListener('click', () => {
+          els.ciReportModal.classList.add('hidden');
+        });
+      }
+
+      if (els.ciReportModal) {
+        els.ciReportModal.addEventListener('click', (e) => {
+          if (e.target === els.ciReportModal) {
+            els.ciReportModal.classList.add('hidden');
+          }
+        });
+      }
+
+      if (els.btnCiRepWeekly) {
+        els.btnCiRepWeekly.addEventListener('click', () => {
+          state.ciReportPeriod = 'weekly';
+          renderCheckinReportModal();
+        });
+      }
+
+      if (els.btnCiRepMonthly) {
+        els.btnCiRepMonthly.addEventListener('click', () => {
+          state.ciReportPeriod = 'monthly';
+          renderCheckinReportModal();
+        });
+      }
+
+      if (els.ciWeeklyGoalInput) {
+        els.ciWeeklyGoalInput.addEventListener('input', (e) => {
+          state.ciWeeklyGoal = clamp(e.target.value, 1, 14);
+          renderCheckinPanel();
+          renderCheckinReportModal();
+          scheduleCloudSave();
+        });
+      }
+
+      // Inicialização na carga da página
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (els.ciInputDate) {
+          els.ciInputDate.value = getTodayDateStr();
+        }
+        await loadStateFromDevice();
+        renderAll();
+        renderCheckinPanel();
+        initCloudSync();
+      });
+    })();
+  </script>
+</body>
+</html>
